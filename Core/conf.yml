@@ -1,2 +1,5 @@
 ip : 127.0.0.1
-port : 9000
+datachannel_port : 9000
+ping_port : 9001
+id_path : id.txt
+client_sleep_time : 1 # Seconds

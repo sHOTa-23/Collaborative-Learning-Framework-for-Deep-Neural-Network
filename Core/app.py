@@ -1,6 +1,8 @@
 import yaml
-from Core.client import Client
-from Server.server import Server
+from Core.datachannel_client import DatachannelClient
+from Server.datachannel_server import DatachannelServer
+from Core.ping_client import PingClient
+from Server.ping_server import PingServer
 
 #178.62.92.57
 class App:
@@ -11,12 +13,9 @@ class App:
     def load_configuration(self) -> dict:
         with open(self.configuration_path) as f:
             return yaml.safe_load(f)
-    def run(self):
-        server = Server(self.configuration['ip'],self.configuration['port'])
-        client = Client(self.configuration['ip'],self.configuration['port'])
 
-        
-        
-    
-    
-        
+    def run(self):
+        datachannelServer = DatachannelServer(self.configuration['ip'],self.configuration['datachannel_port'])
+        datachannelClient = DatachannelClient(self.configuration['ip'],self.configuration['datachannel_port'])
+        pingServer = PingServer(self.configuration['ip'],self.configuration['ping_port'])
+        pingClient = PingClient(self.configuration['ip'],self.configuration['ping_port'],self.configuration['id_path'],self.configuration['client_sleep_time'])

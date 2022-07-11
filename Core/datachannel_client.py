@@ -23,7 +23,7 @@ input_shape = (28, 28, 1)
 #     ]
 # )
 
-class Client():
+class DatachannelClient():
     def __init__(self, ip, port):
         self.ip = ip
         self.port = port
@@ -54,7 +54,7 @@ class Client():
         return buffer.read()
 
     def send_model(self,array):
-        data = Client.prepare_model(array)
+        data = DatachannelClient.prepare_model(array)
         self.server.sendall(data)
         self.server.sendall(b'EOF')
         logging.info("Sent")
@@ -86,11 +86,3 @@ class Client():
         # array = np.random.rand(30,30,30)
         self.send_model(net)
         self.server.close()
-    
-# reader_thread = threading.Thread(target=reading_thread)
-# reader_thread.start()
-
-
-
-# writing_thread = threading.Thread(target=writing_thread)
-# writing_thread.start()
