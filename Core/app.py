@@ -16,6 +16,6 @@ class App:
 
     def run(self):
         datachannelServer = DatachannelServer(self.configuration['ip'],self.configuration['datachannel_port'])
-        datachannelClient = DatachannelClient(self.configuration['ip'],self.configuration['datachannel_port'],self.configuration['model_type'],self.configuration['model_path'])
+        datachannelClient = DatachannelClient(self.configuration['ip'],self.configuration['datachannel_port'],self.configuration['model_type'],self.configuration['model_path'],self.configuration['input_path'],self.configuration['output_path'],self.configuration['learning_rate'])
       #  pingServer = PingServer(self.configuration['ip'],self.configuration['ping_port'])
        # pingClient = PingClient(self.configuration['ip'],self.configuration['ping_port'],self.configuration['id_path'],self.configuration['client_sleep_time'])

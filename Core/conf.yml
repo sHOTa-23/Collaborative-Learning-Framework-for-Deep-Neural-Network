@@ -3,5 +3,8 @@ datachannel_port : 9000
 ping_port : 9001
 id_path : id.txt
 client_sleep_time : 1 # Seconds
-model_path : models/model.pkl
-model_type : sklearn  #possible values: pytorch, tensorflow, sklearn
+model_path : models/scriptmodule.pt
+model_type : pytorch  #possible values: pytorch, tensorflow, sklearn
+input_path: inputs/input.pkl
+output_path: outputs/output.pkl
+learning_rate : 1.7

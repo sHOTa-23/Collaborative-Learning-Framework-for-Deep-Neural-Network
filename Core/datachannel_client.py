@@ -2,7 +2,9 @@ import socket
 import threading
 from io import BytesIO
 import logging
+import pickle
 logging.basicConfig(level=logging.NOTSET)
+
 # from t1 import Net
 # net = Net()
 # from tensorflow import keras
@@ -23,15 +25,41 @@ logging.basicConfig(level=logging.NOTSET)
 # )
 
 class DatachannelClient():
-    def __init__(self, ip, port,model_type,model_path):
+    def __init__(self, ip, port,model_type,model_path,input_path,output_path,learning_rate):
         self.ip = ip
         self.port = port
         self.model_type = model_type
         self.model_path = model_path
+        self.learning_rate = learning_rate
+        self.input_path = input_path
+        self.output_path = output_path
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.connect((self.ip, self.port))
         self.load_model()
+        self.load_input()
+        self.calculate_new_waits()
         self.test_sending()
+
+    def calculate_new_waits(self):
+        if self.model_type == "pytorch":
+            out = self.model(self.input)
+            import torch.nn as nn
+            import torch
+            MSE_loss_fn = nn.MSELoss()
+            loss = MSE_loss_fn(out, self.output)
+            loss.backward()
+            logging.info("Gradients calculated")
+            with torch.no_grad():
+                for param in self.model.parameters():
+                    param -= param.grad * self.learning_rate
+            logging.info("Weights updated")
+
+
+    def load_input(self):
+        self.input = pickle.load(open(self.input_path, 'rb'))
+        self.output = pickle.load(open(self.output_path, 'rb'))
+        logging.info("Input loaded")
+
 
     def load_model(self):
         if self.model_type == "sklearn":
@@ -45,6 +73,7 @@ class DatachannelClient():
         elif self.model_type == "pytorch":
             import torch
             self.model = torch.jit.load(self.model_path)
+            print(self.model.conv1.weight[0, 0])
         logging.info("Model loaded")
    
     @staticmethod
