@@ -40,7 +40,7 @@ class DatachannelClient():
         if 'keras' in model_type or 'keras' in model_parent_type:
             os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
             from tensorflow.keras.models import save_model
-            import h5py
+            sh
             with h5py.File(buffer, 'w') as f:
                 save_model(model, f, include_optimizer=True)
         elif 'sklearn' in model_type or 'sklearn' in model_parent_type:
