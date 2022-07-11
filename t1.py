@@ -25,9 +25,3 @@ class Net(nn.Module):
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
         return x
-
-
-net = Net()
-print(net)
-model_scripted = torch.jit.script(net) # Export to TorchScript
-model_scripted.save('model_scripted.pt')
