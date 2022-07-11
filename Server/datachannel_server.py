@@ -1,4 +1,3 @@
-
 import socket
 import threading
 import numpy as np 
@@ -7,8 +6,8 @@ import logging
 logging.basicConfig(level=logging.NOTSET)
 
 
-class Server:
-    def __init__(self, ip, port,listener_num = 100):
+class DatachannelServer:
+    def __init__(self, ip, port, listener_num = 100):
         self.ip = ip
         self.port = port
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -17,17 +16,14 @@ class Server:
         self.server.listen(listener_num)
         t = threading.Thread(target=self.run)
         t.start()
-        #self.run()
 
     def run(self):
         while True:
             client_socket, (ip, port) = self.server.accept()
             logging.debug("Client connected with ip: " + ip + " and port: " + str(port))
-            # t = threading.Thread(target=thread_handler, args=(client_socket,))
-            # t.start()
-            self.recieve(client_socket)
+            self.receive(client_socket)
 
-    def recieve(self,client_socket, socket_buffer_size=1024):
+    def receive(self,client_socket, socket_buffer_size=1024):
         buffer = BytesIO()
         while True:
             data = client_socket.recv(socket_buffer_size)
@@ -55,16 +51,3 @@ class Server:
                 logging.debug("Client disconnected")
                 client_socket.close()
                 break
-
-
-
-
-
-
-# while True:
-#     client_socket, (ip, port) = server.accept()
-#     print("Client connected with ip: " + ip + " and port: " + str(port))
-#     # t = threading.Thread(target=thread_handler, args=(client_socket,))
-#     # t.start()
-#     recieve(client_socket)
-# server.close()

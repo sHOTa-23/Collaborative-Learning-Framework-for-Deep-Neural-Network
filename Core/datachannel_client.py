@@ -6,7 +6,7 @@ import logging
 logging.basicConfig(level=logging.NOTSET)
 
 
-class Client():
+class DatachannelClient():
     def __init__(self, ip, port):
         self.ip = ip
         self.port = port
@@ -22,7 +22,7 @@ class Client():
         return buffer.read()
 
     def send_numpy(self,array):
-        data = Client.prepare_numpy_array(array)
+        data = DatachannelClient.prepare_numpy_array(array)
         self.server.sendall(data)
         self.server.sendall(b'EOF')
         logging.info("Sent")
@@ -54,11 +54,3 @@ class Client():
         array = np.random.rand(30,30,30)
         self.send_numpy(array)
         self.server.close()
-    
-# reader_thread = threading.Thread(target=reading_thread)
-# reader_thread.start()
-
-
-
-# writing_thread = threading.Thread(target=writing_thread)
-# writing_thread.start()
