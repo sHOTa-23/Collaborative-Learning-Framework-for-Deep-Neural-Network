@@ -51,6 +51,7 @@ class DatachannelServer:
             import os
             os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
             from tensorflow.keras.models import load_model
+            import h5py
             with h5py.File(file, 'r') as f:
                 model = load_model(f)
             return model
