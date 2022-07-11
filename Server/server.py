@@ -2,6 +2,7 @@
 import socket
 import threading
 import numpy as np 
+import torch
 from io import BytesIO
 import logging
 logging.basicConfig(level=logging.NOTSET)
@@ -39,8 +40,27 @@ class Server:
                 client_socket.send(b'Done')
                 break
         buffer.seek(0)
-        logging.info(np.load(buffer))
+        model = Server.load_data(buffer)
+        logging.info(model)
         logging.info("Received")
+    
+    @staticmethod
+    def load_data(file: BytesIO):
+        data = file.read()[:-3]
+        file.seek(0)
+        if b'NUMPY' in data:
+            return np.load(file)
+        elif b'sklearn' in data:
+            return load(file)
+        elif b'HDF' in data:
+            os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+            from tensorflow.keras.models import load_model
+            with h5py.File(file, 'r') as f:
+                model = load_model(f)
+            return model
+        else:
+            model = torch.jit.load(file)
+            return model
 
 
     def thread_handler(client_socket):
