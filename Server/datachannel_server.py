@@ -44,11 +44,11 @@ class DatachannelServer:
     def load_data(file: BytesIO):
         data = file.read()[:-3]
         file.seek(0)
-        if b'NUMPY' in data:
-            return np.load(file)
-        elif b'sklearn' in data:
+        if b'sklearn' in data:
+            from joblib import load, dump
             return load(file)
         elif b'HDF' in data:
+            import os
             os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
             from tensorflow.keras.models import load_model
             with h5py.File(file, 'r') as f:

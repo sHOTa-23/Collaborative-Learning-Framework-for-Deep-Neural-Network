@@ -6,22 +6,22 @@ import logging
 logging.basicConfig(level=logging.NOTSET)
 from t1 import Net
 net = Net()
-# from tensorflow import keras
-# from tensorflow.keras import layers
+from tensorflow import keras
+from tensorflow.keras import layers
 num_classes = 10
 input_shape = (28, 28, 1)
-# model = keras.Sequential(
-#     [
-#         keras.Input(shape=input_shape),
-#         layers.Conv2D(32, kernel_size=(3, 3), activation="relu"),
-#         layers.MaxPooling2D(pool_size=(2, 2)),
-#         layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
-#         layers.MaxPooling2D(pool_size=(2, 2)),
-#         layers.Flatten(),
-#         layers.Dropout(0.5),
-#         layers.Dense(num_classes, activation="softmax"),
-#     ]
-# )
+model = keras.Sequential(
+    [
+        keras.Input(shape=input_shape),
+        layers.Conv2D(32, kernel_size=(3, 3), activation="relu"),
+        layers.MaxPooling2D(pool_size=(2, 2)),
+        layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
+        layers.MaxPooling2D(pool_size=(2, 2)),
+        layers.Flatten(),
+        layers.Dropout(0.5),
+        layers.Dense(num_classes, activation="softmax"),
+    ]
+)
 
 class DatachannelClient():
     def __init__(self, ip, port):
@@ -84,5 +84,5 @@ class DatachannelClient():
 
     def test_sending(self):
         # array = np.random.rand(30,30,30)
-        self.send_model(net)
+        self.send_model(model)
         self.server.close()
