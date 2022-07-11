@@ -48,12 +48,13 @@ class DatachannelServer:
             from joblib import load, dump
             return load(file)
         elif b'HDF' in data:
-            import os
-            os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+            import tensorflow as tf
+            tf.get_logger().setLevel(logging.ERROR)
             from tensorflow.keras.models import load_model
             import h5py
             with h5py.File(file, 'r') as f:
                 model = load_model(f)
+                print(model.summary())
             return model
         else:
             model = torch.jit.load(file)

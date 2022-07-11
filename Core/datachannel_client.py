@@ -1,36 +1,52 @@
 import socket
 import threading
-import os
 from io import BytesIO
 import logging
 logging.basicConfig(level=logging.NOTSET)
-from t1 import Net
-net = Net()
-from tensorflow import keras
-from tensorflow.keras import layers
-num_classes = 10
-input_shape = (28, 28, 1)
-model = keras.Sequential(
-    [
-        keras.Input(shape=input_shape),
-        layers.Conv2D(32, kernel_size=(3, 3), activation="relu"),
-        layers.MaxPooling2D(pool_size=(2, 2)),
-        layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
-        layers.MaxPooling2D(pool_size=(2, 2)),
-        layers.Flatten(),
-        layers.Dropout(0.5),
-        layers.Dense(num_classes, activation="softmax"),
-    ]
-)
+# from t1 import Net
+# net = Net()
+# from tensorflow import keras
+# from tensorflow.keras import layers
+# num_classes = 10
+# input_shape = (28, 28, 1)
+# model = keras.Sequential(
+#     [
+#         keras.Input(shape=input_shape),
+#         layers.Conv2D(32, kernel_size=(3, 3), activation="relu"),
+#         layers.MaxPooling2D(pool_size=(2, 2)),
+#         layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
+#         layers.MaxPooling2D(pool_size=(2, 2)),
+#         layers.Flatten(),
+#         layers.Dropout(0.5),
+#         layers.Dense(num_classes, activation="softmax"),
+#     ]
+# )
 
 class DatachannelClient():
-    def __init__(self, ip, port):
+    def __init__(self, ip, port,model_type,model_path):
         self.ip = ip
         self.port = port
+        self.model_type = model_type
+        self.model_path = model_path
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.connect((self.ip, self.port))
+        self.load_model()
         self.test_sending()
 
+    def load_model(self):
+        if self.model_type == "sklearn":
+            from joblib import load
+            self.model = load(self.model_path)
+        elif self.model_type == "tensorflow":
+            import tensorflow as tf
+            tf.get_logger().setLevel(logging.ERROR)
+            from tensorflow.keras.models import load_model
+            self.model = load_model(self.model_path)
+        elif self.model_type == "pytorch":
+            import torch
+            self.model = torch.jit.load(self.model_path)
+        logging.info("Model loaded")
+   
     @staticmethod
     def prepare_model(model):
         buffer = BytesIO()
@@ -38,7 +54,8 @@ class DatachannelClient():
         model_type = str(type(model))
         model_parent_type = str(type(model).__bases__)
         if 'keras' in model_type or 'keras' in model_parent_type:
-            os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+            import tensorflow as tf
+            tf.get_logger().setLevel(logging.ERROR)
             from tensorflow.keras.models import save_model
             import h5py
             with h5py.File(buffer, 'w') as f:
@@ -84,5 +101,5 @@ class DatachannelClient():
 
     def test_sending(self):
         # array = np.random.rand(30,30,30)
-        self.send_model(model)
+        self.send_model(self.model)
         self.server.close()
