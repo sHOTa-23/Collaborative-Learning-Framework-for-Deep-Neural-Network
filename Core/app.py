@@ -4,7 +4,8 @@ from Server.datachannel_server import DatachannelServer
 from Core.ping_client import PingClient
 from Server.ping_server import PingServer
 from Core.yaml_validator import Validator
-from Core.client_controller import Controller
+from Core.client_controller import ClientController
+from Server.server_controller import ServerController
 import logging
 logging.basicConfig(level=logging.NOTSET)
 
@@ -28,8 +29,14 @@ class App:
             logging.error(e)
             return
         datachannel_server = DatachannelServer(self.configuration['ip'],self.configuration['datachannel_port'])
-        datachannel_client = DatachannelClient(self.configuration['ip'],self.configuration['datachannel_port'],self.configuration['model_type'],self.configuration['model_path'],self.configuration['input_path'],self.configuration['output_path'],self.configuration['learning_rate'],self.loss_function,self.optimizer)
         ping_server = PingServer(self.configuration['ip'],self.configuration['ping_port'])
+        
+        server_controller = ServerController(datachannel_server,ping_server)
+        server_controller.start()
+        server_controller.fire()
+        
+        datachannel_client = DatachannelClient(self.configuration['ip'],self.configuration['datachannel_port'],self.configuration['model_type'],self.configuration['model_path'],self.configuration['input_path'],self.configuration['output_path'],self.configuration['learning_rate'],self.loss_function,self.optimizer)
         ping_client = PingClient(self.configuration['ip'],self.configuration['ping_port'],self.configuration['id_path'],self.configuration['client_sleep_time'])
-        controller = Controller(datachannel_client,ping_client)
-        controller.start()
+        
+        client_controller = ClientController(datachannel_client,ping_client)
+        client_controller.start()

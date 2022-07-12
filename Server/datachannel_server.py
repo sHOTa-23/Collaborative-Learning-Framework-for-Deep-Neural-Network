@@ -11,10 +11,14 @@ class DatachannelServer:
     def __init__(self, ip, port, listener_num = 100):
         self.ip = ip
         self.port = port
+        self.listener_num = listener_num
+       
+    
+    def start(self):
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server.bind((self.ip, self.port))
-        self.server.listen(listener_num)
+        self.server.listen(self.listener_num)
         t = threading.Thread(target=self.run)
         t.start()
 

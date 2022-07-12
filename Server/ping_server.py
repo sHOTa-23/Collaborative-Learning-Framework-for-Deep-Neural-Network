@@ -7,15 +7,19 @@ logging.basicConfig(level=logging.NOTSET)
 
 
 class PingServer:
-    def __init__(self, ip, port,starting_time = datetime.datetime.now(),time_interval = 600, listener_num = 100):
+    def __init__(self, ip, port,starting_time = datetime.datetime.now(),time_interval = 6, listener_num = 100):
         self.ip = ip
         self.port = port
         self.starting_time = starting_time
         self.time_interval = time_interval
+        self.listener_num = listener_num
+        
+    def start(self,controller):
+        self.controller = controller
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server.bind((self.ip, self.port))
-        self.server.listen(listener_num)
+        self.server.listen(self.listener_num)
         self.clients = {}
         t = threading.Thread(target=self.run)
         t.start()

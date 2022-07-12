@@ -25,9 +25,11 @@ class DatachannelClient():
         self.load_input()
         self.calculate_new_waits()
         self.test_sending()
+        
+        # oto aba shen ici jigaro daamate aq mighebis kodi 
         self.server.close()
         print("Server closed")
-        
+
     def calculate_new_waits(self):
         if self.model_type == "pytorch":
             out = self.model(self.input)
@@ -73,7 +75,7 @@ class DatachannelClient():
             self.model = torch.jit.load(self.model_path)
             print(self.model.state_dict().items())
         logging.info("Model loaded")
-   
+        
     @staticmethod
     def prepare_model(model):
         buffer = BytesIO()
