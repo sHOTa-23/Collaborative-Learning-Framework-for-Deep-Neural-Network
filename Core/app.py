@@ -28,8 +28,9 @@ class App:
         except Exception as e:
             logging.error(e)
             return
-        ping_server = PingServer(self.configuration['ip'],self.configuration['ping_port'])
-        datachannel_server = DatachannelServer(self.configuration['ip'],self.configuration['datachannel_port'])
+        logging.debug("Configuration is valid")
+        ping_server = PingServer(self.configuration['ip'],self.configuration['ping_port'],self.configuration['mongodb_host'])
+        datachannel_server = DatachannelServer(self.configuration['ip'],self.configuration['datachannel_port'],self.configuration['mongodb_host'])
         
         server_controller = ServerController(datachannel_server,ping_server)
         server_controller.start()
@@ -39,3 +40,5 @@ class App:
 
         client_controller = ClientController(datachannel_client,ping_client)
         client_controller.start()
+
+        logging.debug("Controllers started")

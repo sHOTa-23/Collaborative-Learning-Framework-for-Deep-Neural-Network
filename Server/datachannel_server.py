@@ -1,24 +1,20 @@
 import socket
 import threading
-import numpy as np 
-import torch
-from io import BytesIO
 import logging
 import datetime
-from Core.utils import prepare_model,receive,load_data
-
+from Core.utils import prepare_model,receive
 from Core.ClientsRepository import ClientsRepository
 logging.basicConfig(level=logging.NOTSET)
 
 
 class DatachannelServer:
-    def __init__(self, ip, port, listener_num = 100, gap_time=10):
+    def __init__(self, ip, port,mongodb_host, listener_num = 100, gap_time=10):
         self.ip = ip
         self.port = port
         self.listener_num = listener_num
         self.gap_time = gap_time
         
-        self.clientsDB = ClientsRepository()
+        self.clientsDB = ClientsRepository(mongodb_host)
         
     
     def start(self):

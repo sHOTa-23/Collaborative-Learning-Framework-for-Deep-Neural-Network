@@ -1,8 +1,8 @@
 from pymongo import MongoClient
 
 class ClientsRepository:
-    def __init__(self):
-        self.con = MongoClient('mongodb://localhost:27017/')
+    def __init__(self,mongodb_host):
+        self.con = MongoClient(mongodb_host)
         self.db = self.con.clientsDB
         self.clients = self.db.ids
 

@@ -8,9 +8,10 @@ logging.basicConfig(level=logging.NOTSET)
 
 
 class PingServer:
-    def __init__(self, ip, port,starting_time = datetime.datetime.now(),time_interval = 6, listener_num = 100):
+    def __init__(self, ip, port,mongodb_host,starting_time = datetime.datetime.now(),time_interval = 6, listener_num = 100):
         self.ip = ip
         self.port = port
+        self.mongodb_host = mongodb_host
         self.starting_time = starting_time
         self.time_interval = time_interval
         self.listener_num = listener_num
@@ -21,7 +22,7 @@ class PingServer:
         self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server.bind((self.ip, self.port))
         self.server.listen(self.listener_num)
-        self.clientsDB = ClientsRepository()
+        self.clientsDB = ClientsRepository(self.mongodb_host)
         t = threading.Thread(target=self.run)
         t.start()
 
