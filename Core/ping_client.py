@@ -11,11 +11,11 @@ class PingClient():
         self.ip = ip
         self.port = port
         self.id_path = id_path
-        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server.connect((self.ip, self.port))
         self.sleep_time = sleep_time
 
     def start(self,controller):
+        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server.connect((self.ip, self.port))
         self.controller = controller
         self.run()
 
@@ -26,24 +26,22 @@ class PingClient():
 
     def auth(self):
         if not os.path.exists(self.id_path):
-            new_id = self.getIdFromServer()
-            print('Got id from server:{}'.format(new_id))
-            
+            new_id = self.get_id_from_server()
+            logging.debug('Ping Client Got id from server:{}'.format(new_id))
             with open(self.id_path, 'x') as f:
                 f.write(new_id)
         else:
             with open(self.id_path) as f:
                 id = f.read()
-                print('My id is', id)
-                self.connectServerWithId(id)
+                self.connect_server_with_id(id)
         f.close()
 
-    def getIdFromServer(self):
+    def get_id_from_server(self):
         # Ping server to get an id
         try:
             self.server.send(b'Give me an id you son of a bitch!')
         except:
-            print("Server disconnected")
+            logging.warning("In get_id_from_server, exception raised while sending")
             self.server.close()
             exit()
 
@@ -51,21 +49,21 @@ class PingClient():
         try:
             message = self.server.recv(1024)
             if message.decode() == "":
-                print("Server disconnected")
+                logging.debug("empty message has been received")
                 self.server.close()
                 exit()
             return message.decode('utf-8')
         except:
-            print("Server disconnected")
+            logging.warning("In get_id_from_server, exception raised while receiving")
             self.server.close()
             exit()
 
-    def connectServerWithId(self, id):
+    def connect_server_with_id(self, id):
         # Connect server with id
         try:
             self.server.send('Connecting with id:{}'.format(id).encode())
         except:
-            print("Server disconnected")
+            logging.warning("In connect_server_with_id, exception raised while sending")
             self.server.close()
             exit()
 
@@ -73,12 +71,11 @@ class PingClient():
         try:
             message = self.server.recv(1024)
             if message.decode() == "":
-                print("Server disconnected")
+                logging.debug("empty message has been received")
                 self.server.close()
                 exit()
-            print(message.decode('utf-8'))
         except:
-            print("Server disconnected")
+            logging.warning("In connect_server_with_id, exception raised while receiving")
             self.server.close()
             exit()
 

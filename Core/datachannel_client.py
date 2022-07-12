@@ -3,6 +3,8 @@ import threading
 from io import BytesIO
 import logging
 import pickle
+from Core.utils import prepare_model,receive,load_data
+
 logging.basicConfig(level=logging.NOTSET)
 
 
@@ -19,16 +21,16 @@ class DatachannelClient():
         self.optimizer = optimizer
 
     def start(self):
+        with open('id.txt') as f:
+            self.id = f.read()
+        f.close()
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.connect((self.ip, self.port))
         self.load_model()
         self.load_input()
         self.calculate_new_waits()
-        self.test_sending()
+        self.send_model(self.model)
         
-        # oto aba shen ici jigaro daamate aq mighebis kodi 
-        self.server.close()
-        print("Server closed")
 
     def calculate_new_waits(self):
         if self.model_type == "pytorch":
@@ -69,42 +71,19 @@ class DatachannelClient():
             tf.get_logger().setLevel(logging.ERROR)
             from tensorflow.keras.models import load_model
             self.model = load_model(self.model_path)
-            print(self.model.trainable_variables)
         elif self.model_type == "pytorch":
             import torch
             self.model = torch.jit.load(self.model_path)
-            print(self.model.state_dict().items())
         logging.info("Model loaded")
-
-    @staticmethod
-    def prepare_model(model):
-        buffer = BytesIO()
-        logging.info(str(type(model).__bases__))
-        model_type = str(type(model))
-        model_parent_type = str(type(model).__bases__)
-        if 'keras' in model_type or 'keras' in model_parent_type:
-            import tensorflow as tf
-            tf.get_logger().setLevel(logging.ERROR)
-            from tensorflow.keras.models import save_model
-            import h5py
-            with h5py.File(buffer, 'w') as f:
-                save_model(model, f, include_optimizer=True)
-        elif 'sklearn' in model_type or 'sklearn' in model_parent_type:
-            from joblib import load, dump
-            dump(model, buffer)
-        elif 'torch' in model_type or 'torch' in model_parent_type:
-            import torch
-            scripted_model = torch.jit.script(model)
-            torch.jit.save(scripted_model, buffer)
-        buffer.seek(0)
-        return buffer.read()
+        
+   
 
     def send_model(self,array):
-        data = DatachannelClient.prepare_model(array)
+        data = prepare_model(array)
+        self.server.sendall(self.id.encode())
         self.server.sendall(data)
         self.server.sendall(b'EOF')
-        logging.info("Sent")
-        self.server.recv(1024)
+        model = receive(self.server)
 
     def reading_thread(self):
         while True:
