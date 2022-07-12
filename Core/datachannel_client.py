@@ -70,7 +70,6 @@ class DatachannelClient():
             import torch
             self.model = torch.jit.load(self.model_path)
             print(self.model.state_dict().items())
-            print(self.model.conv1.weight[0, 0])
         logging.info("Model loaded")
    
     @staticmethod

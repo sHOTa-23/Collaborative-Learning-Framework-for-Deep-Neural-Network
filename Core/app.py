@@ -3,6 +3,9 @@ from Core.datachannel_client import DatachannelClient
 from Server.datachannel_server import DatachannelServer
 from Core.ping_client import PingClient
 from Server.ping_server import PingServer
+from Core.yaml_validator import Validator
+import logging
+logging.basicConfig(level=logging.NOTSET)
 
 #178.62.92.57
 class App:
@@ -17,6 +20,12 @@ class App:
             return yaml.safe_load(f)
 
     def run(self):
+        validator = Validator(self.configuration)
+        try:
+            validator.validate()
+        except Exception as e:
+            logging.error(e)
+            return
         datachannelServer = DatachannelServer(self.configuration['ip'],self.configuration['datachannel_port'])
         datachannelClient = DatachannelClient(self.configuration['ip'],self.configuration['datachannel_port'],self.configuration['model_type'],self.configuration['model_path'],self.configuration['input_path'],self.configuration['output_path'],self.configuration['learning_rate'],self.loss_function,self.optimizer)
       #  pingServer = PingServer(self.configuration['ip'],self.configuration['ping_port'])

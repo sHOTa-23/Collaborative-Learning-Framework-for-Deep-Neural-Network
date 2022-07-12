@@ -59,7 +59,7 @@ class DatachannelServer:
             return model
         else:
             model = torch.jit.load(file)
-            print(model.conv1.weight[0, 0])
+            print(model.state_dict().items())
             return model
 
 

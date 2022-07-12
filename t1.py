@@ -26,30 +26,28 @@ import torch.nn.functional as F
 #         x = self.fc3(x)
 #         return x
 
-# model = nn.Sequential(nn.Linear(2, 3),
-#                       nn.ReLU(),
-#                       nn.Linear(3, 1),
-#                       nn.Sigmoid())
+model = nn.Sequential(nn.Linear(2, 3),
+                      nn.ReLU(),
+                      nn.Linear(3, 1),
+                      nn.Sigmoid())
 
 
-MSE_loss_fn = nn.MSELoss()
-from t2 import A
-a = A(torch.Tensor([[1,2,3],[4,5,6]]),torch.Tensor([[1,2,3],[4,5,6]]),MSE_loss_fn)
-print(a.bla())
-# input = torch.randn(2)
-# output1 = model(input)
-# output = torch.Tensor([0.2131231])
+# MSE_loss_fn = nn.MSELoss()
+# from t2 import A
+# a = A(torch.Tensor([[1,2,3],[4,5,6]]),torch.Tensor([[1,2,3],[4,5,6]]),MSE_loss_fn)
+# print(a.bla())
+input = torch.randn(2)
+output = torch.Tensor([0.2131231])
 
-# import pickle 
-# pickle.dump(input, open("input.pkl", "wb"))
-# pickle.dump(output, open("output.pkl", "wb"))
+import pickle 
+pickle.dump(input, open("input.pkl", "wb"))
+pickle.dump(output, open("output.pkl", "wb"))
 # print(output)
 # print(output1)
 # print(input)
-# m = torch.jit.script(model)
+m = torch.jit.script(model)
 
-# Save to file
-# torch.jit.save(m, '1.pt')
+torch.jit.save(m, '1.pt')
 
 # import tensorflow as tf
 # import numpy as np
@@ -119,25 +117,25 @@ print(a.bla())
 # # save
 # joblib.dump(clf, "model.pkl") 
 
-from tensorflow import keras
-import tensorflow as tf
-from tensorflow.keras import layers
-import numpy as np
+# from tensorflow import keras
+# import tensorflow as tf
+# from tensorflow.keras import layers
+# import numpy as np
 
-input_dim = (28, 28)
-# get output dimensions 10 classes
-output_dim = 3
+# input_dim = (28, 28)
+# # get output dimensions 10 classes
+# output_dim = 3
 
-# create sequential model
-model = keras.Sequential()
-model.add(layers.Flatten(input_shape=input_dim))
-model.add(layers.Dense(units=128, activation='relu'))
-model.add(layers.BatchNormalization())
-model.add(layers.Dense(units=128, activation='relu'))
-model.add(layers.BatchNormalization())
-model.add(layers.Dense(units=output_dim))
+# # create sequential model
+# model = keras.Sequential()
+# model.add(layers.Flatten(input_shape=input_dim))
+# model.add(layers.Dense(units=128, activation='relu'))
+# model.add(layers.BatchNormalization())
+# model.add(layers.Dense(units=128, activation='relu'))
+# model.add(layers.BatchNormalization())
+# model.add(layers.Dense(units=output_dim))
 
-print(model.trainable_variables)
+
 # model.save('gfgModel.h5')
 #random keras tensor with above shapes
 
@@ -148,8 +146,8 @@ print(model.trainable_variables)
 
 # output = model(np.random.rand(1,28, 28))
 # output = tf.constant([[0.770061,0.46085632,0.12955794]], dtype=tf.float32)
-import pickle 
-input = np.random.rand(1,28, 28)
+# import pickle 
+# input = np.random.rand(1,28, 28)
 
 
-pickle.dump(input, open("input.pkl", "wb"))
+# pickle.dump(input, open("input.pkl", "wb"))

@@ -8,14 +8,14 @@
 # # model.eval()
 
 
-# input = torch.randn(1, 1, 32, 32)
-# # out = model(input)
-# # out.requires_grad
-# c = torch.Tensor([[ 0.0656, -0.0524, -0.0208, -0.0310, -0.0672, -0.0786, -0.0219, -0.1383,
-#          -0.0584, -0.1289]])
-# import pickle 
-# pickle.dump(input, open("input.pkl", "wb"))
-# # print(pickle.load(open("c.pkl", "rb")))
+input = torch.randn(1, 1, 32, 32)
+# out = model(input)
+# out.requires_grad
+c = torch.Tensor([[ 0.0656, -0.0524, -0.0208, -0.0310, -0.0672, -0.0786, -0.0219, -0.1383,
+         -0.0584, -0.1289]])
+import pickle 
+pickle.dump(input, open("input.pkl", "wb"))
+# print(pickle.load(open("c.pkl", "rb")))
 # # loss = MSE_loss_fn(out, c)
 # # loss.backward()
 # # a = model.conv1.weight.grad
