@@ -6,10 +6,11 @@ from Server.ping_server import PingServer
 
 #178.62.92.57
 class App:
-    def __init__(self,configuration_path,loss_function) -> None:
+    def __init__(self,configuration_path,loss_function,optimizer = None) -> None:
         self.configuration_path = configuration_path
         self.configuration = self.load_configuration()
         self.loss_function = loss_function
+        self.optimizer = optimizer
     
     def load_configuration(self) -> dict:
         with open(self.configuration_path) as f:
@@ -17,6 +18,6 @@ class App:
 
     def run(self):
         datachannelServer = DatachannelServer(self.configuration['ip'],self.configuration['datachannel_port'])
-        datachannelClient = DatachannelClient(self.configuration['ip'],self.configuration['datachannel_port'],self.configuration['model_type'],self.configuration['model_path'],self.configuration['input_path'],self.configuration['output_path'],self.configuration['learning_rate'],self.loss_function)
+        datachannelClient = DatachannelClient(self.configuration['ip'],self.configuration['datachannel_port'],self.configuration['model_type'],self.configuration['model_path'],self.configuration['input_path'],self.configuration['output_path'],self.configuration['learning_rate'],self.loss_function,self.optimizer)
       #  pingServer = PingServer(self.configuration['ip'],self.configuration['ping_port'])
        # pingClient = PingClient(self.configuration['ip'],self.configuration['ping_port'],self.configuration['id_path'],self.configuration['client_sleep_time'])

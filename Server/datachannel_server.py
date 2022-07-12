@@ -55,6 +55,7 @@ class DatachannelServer:
             with h5py.File(file, 'r') as f:
                 model = load_model(f)
                 print(model.summary())
+                print(print(model.trainable_variables)) 
             return model
         else:
             model = torch.jit.load(file)

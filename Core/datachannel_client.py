@@ -5,27 +5,9 @@ import logging
 import pickle
 logging.basicConfig(level=logging.NOTSET)
 
-# from t1 import Net
-# net = Net()
-# from tensorflow import keras
-# from tensorflow.keras import layers
-# num_classes = 10
-# input_shape = (28, 28, 1)
-# model = keras.Sequential(
-#     [
-#         keras.Input(shape=input_shape),
-#         layers.Conv2D(32, kernel_size=(3, 3), activation="relu"),
-#         layers.MaxPooling2D(pool_size=(2, 2)),
-#         layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
-#         layers.MaxPooling2D(pool_size=(2, 2)),
-#         layers.Flatten(),
-#         layers.Dropout(0.5),
-#         layers.Dense(num_classes, activation="softmax"),
-#     ]
-# )
 
 class DatachannelClient():
-    def __init__(self, ip, port,model_type,model_path,input_path,output_path,learning_rate,loss_function):
+    def __init__(self, ip, port,model_type,model_path,input_path,output_path,learning_rate,loss_function,optimizer = None):
         self.ip = ip
         self.port = port
         self.model_type = model_type
@@ -35,6 +17,7 @@ class DatachannelClient():
         self.output_path = output_path
         self.loss_function = loss_function
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.optimizer = optimizer
         self.server.connect((self.ip, self.port))
         self.load_model()
         self.load_input()
@@ -44,7 +27,6 @@ class DatachannelClient():
     def calculate_new_waits(self):
         if self.model_type == "pytorch":
             out = self.model(self.input)
-            import torch.nn as nn
             import torch
            # MSE_loss_fn = nn.MSELoss()
             loss = self.loss_function(out, self.output)
@@ -54,7 +36,18 @@ class DatachannelClient():
                 for param in self.model.parameters():
                     param -= param.grad * self.learning_rate
             
-            logging.info("Weights updated")
+        elif self.model_type == "tensorflow":
+            import tensorflow as tf
+            
+            logging.info("Gradients calculated")
+            with tf.GradientTape() as tape:
+    # Trainable variables are automatically tracked by GradientTape
+                current_loss = self.loss_function(self.output,self.model(self.input))
+            gradient = tape.gradient(current_loss, self.model.trainable_variables)
+            self.optimizer.apply_gradients(zip(gradient, self.model.trainable_variables))
+                # for param in self.model.trainable_variables:
+                #     param -= param.grad * self.learning_rate
+        logging.info("Weights updated")
 
 
     def load_input(self):
@@ -72,6 +65,7 @@ class DatachannelClient():
             tf.get_logger().setLevel(logging.ERROR)
             from tensorflow.keras.models import load_model
             self.model = load_model(self.model_path)
+            print(self.model.trainable_variables)
         elif self.model_type == "pytorch":
             import torch
             self.model = torch.jit.load(self.model_path)

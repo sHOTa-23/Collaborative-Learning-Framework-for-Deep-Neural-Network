@@ -118,3 +118,38 @@ print(a.bla())
 
 # # save
 # joblib.dump(clf, "model.pkl") 
+
+from tensorflow import keras
+import tensorflow as tf
+from tensorflow.keras import layers
+import numpy as np
+
+input_dim = (28, 28)
+# get output dimensions 10 classes
+output_dim = 3
+
+# create sequential model
+model = keras.Sequential()
+model.add(layers.Flatten(input_shape=input_dim))
+model.add(layers.Dense(units=128, activation='relu'))
+model.add(layers.BatchNormalization())
+model.add(layers.Dense(units=128, activation='relu'))
+model.add(layers.BatchNormalization())
+model.add(layers.Dense(units=output_dim))
+
+print(model.trainable_variables)
+# model.save('gfgModel.h5')
+#random keras tensor with above shapes
+
+
+
+
+#random tensorflow tensor with above shapes
+
+# output = model(np.random.rand(1,28, 28))
+# output = tf.constant([[0.770061,0.46085632,0.12955794]], dtype=tf.float32)
+import pickle 
+input = np.random.rand(1,28, 28)
+
+
+pickle.dump(input, open("input.pkl", "wb"))
