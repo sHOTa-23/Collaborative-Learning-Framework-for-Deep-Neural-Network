@@ -75,7 +75,7 @@ class DatachannelClient():
             self.model = torch.jit.load(self.model_path)
             print(self.model.state_dict().items())
         logging.info("Model loaded")
-        
+
     @staticmethod
     def prepare_model(model):
         buffer = BytesIO()

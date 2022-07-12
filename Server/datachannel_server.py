@@ -28,6 +28,8 @@ class DatachannelServer:
             logging.debug("Client connected with ip: " + ip + " and port: " + str(port))
             self.receive(client_socket)
 
+    
+    
     def receive(self,client_socket, socket_buffer_size=1024):
         buffer = BytesIO()
         while True:
@@ -41,6 +43,8 @@ class DatachannelServer:
                 break
         buffer.seek(0)
         model = DatachannelServer.load_data(buffer)
+        m = torch.jit.script(model)
+        torch.jit.save(m, 'test1.pt')
         logging.info(model)
         logging.info("Received")
     

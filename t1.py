@@ -152,14 +152,16 @@
 
 # # pickle.dump(input, open("input.pkl", "wb"))
 
-import time
-import datetime
-#print current time in hour format and print current time after 2 hours
-a = datetime.datetime.now()
-print(a.strftime("%H:%M:%S"))
+# import time
+# import datetime
+# #print current time in hour format and print current time after 2 hours
+# a = datetime.datetime.now()
+# print(a.strftime("%H:%M:%S"))
 
-time.sleep(65)
-b = datetime.datetime.now()
-print(b.strftime("%H:%M:%S"))
-c = b-a
-print(c.seconds)
+# time.sleep(65)
+# b = datetime.datetime.now()
+# print(b.strftime("%H:%M:%S"))
+# c = b-a
+# print(c.seconds)
+
+import torch
