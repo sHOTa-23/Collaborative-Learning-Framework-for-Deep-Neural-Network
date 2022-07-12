@@ -7,9 +7,11 @@ logging.basicConfig(level=logging.NOTSET)
 
 
 class PingServer:
-    def __init__(self, ip, port, listener_num = 100):
+    def __init__(self, ip, port,starting_time = datetime.datetime.now(),time_interval = 600, listener_num = 100):
         self.ip = ip
         self.port = port
+        self.starting_time = starting_time
+        self.time_interval = time_interval
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server.bind((self.ip, self.port))
@@ -49,4 +51,12 @@ class PingServer:
                 print("Client {} disconnected".format(client_id))
                 client_socket.close()
                 break
+            time_diff = current_time - self.starting_time
+            if time_diff.seconds > self.time_interval:
+                self.starting_time = current_time
+                print("changed time")
+                client_socket.send(b'start')
+            else:
+                client_socket.send(b'not start')
+
             self.clients[client_id] = current_time

@@ -16,14 +16,18 @@ class DatachannelClient():
         self.input_path = input_path
         self.output_path = output_path
         self.loss_function = loss_function
-        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.optimizer = optimizer
+
+    def start(self):
+        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.connect((self.ip, self.port))
         self.load_model()
         self.load_input()
         self.calculate_new_waits()
         self.test_sending()
-
+        self.server.close()
+        print("Server closed")
+        
     def calculate_new_waits(self):
         if self.model_type == "pytorch":
             out = self.model(self.input)
@@ -49,12 +53,10 @@ class DatachannelClient():
                 #     param -= param.grad * self.learning_rate
         logging.info("Weights updated")
 
-
     def load_input(self):
         self.input = pickle.load(open(self.input_path, 'rb'))
         self.output = pickle.load(open(self.output_path, 'rb'))
         logging.info("Input loaded")
-
 
     def load_model(self):
         if self.model_type == "sklearn":

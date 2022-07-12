@@ -14,6 +14,9 @@ class PingClient():
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.connect((self.ip, self.port))
         self.sleep_time = sleep_time
+
+    def start(self,controller):
+        self.controller = controller
         self.run()
 
     def run(self):
@@ -25,6 +28,7 @@ class PingClient():
         if not os.path.exists(self.id_path):
             new_id = self.getIdFromServer()
             print('Got id from server:{}'.format(new_id))
+            
             with open(self.id_path, 'x') as f:
                 f.write(new_id)
         else:
@@ -81,4 +85,7 @@ class PingClient():
     def ping_thread(self):
         while True:
             self.server.send(b'Ping')
+            message = self.server.recv(1024).decode('utf-8')
+            if message  == "start":
+                self.controller.fire()
             time.sleep(self.sleep_time)
