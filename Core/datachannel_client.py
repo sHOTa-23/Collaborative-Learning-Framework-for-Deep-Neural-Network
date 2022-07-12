@@ -25,7 +25,7 @@ logging.basicConfig(level=logging.NOTSET)
 # )
 
 class DatachannelClient():
-    def __init__(self, ip, port,model_type,model_path,input_path,output_path,learning_rate):
+    def __init__(self, ip, port,model_type,model_path,input_path,output_path,learning_rate,loss_function):
         self.ip = ip
         self.port = port
         self.model_type = model_type
@@ -33,6 +33,7 @@ class DatachannelClient():
         self.learning_rate = learning_rate
         self.input_path = input_path
         self.output_path = output_path
+        self.loss_function = loss_function
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.connect((self.ip, self.port))
         self.load_model()
@@ -45,13 +46,14 @@ class DatachannelClient():
             out = self.model(self.input)
             import torch.nn as nn
             import torch
-            MSE_loss_fn = nn.MSELoss()
-            loss = MSE_loss_fn(out, self.output)
+           # MSE_loss_fn = nn.MSELoss()
+            loss = self.loss_function(out, self.output)
             loss.backward()
             logging.info("Gradients calculated")
             with torch.no_grad():
                 for param in self.model.parameters():
                     param -= param.grad * self.learning_rate
+            
             logging.info("Weights updated")
 
 
@@ -73,6 +75,7 @@ class DatachannelClient():
         elif self.model_type == "pytorch":
             import torch
             self.model = torch.jit.load(self.model_path)
+            print(self.model.state_dict().items())
             print(self.model.conv1.weight[0, 0])
         logging.info("Model loaded")
    

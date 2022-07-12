@@ -1,4 +1,4 @@
 from Core.app import App
-
-app = App('Core/conf.yml')
+import torch.nn as nn
+app = App('Core/conf.yml',nn.L1Loss())
 app.run()
