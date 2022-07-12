@@ -28,15 +28,14 @@ class App:
         except Exception as e:
             logging.error(e)
             return
-        datachannel_server = DatachannelServer(self.configuration['ip'],self.configuration['datachannel_port'])
         ping_server = PingServer(self.configuration['ip'],self.configuration['ping_port'])
+        datachannel_server = DatachannelServer(self.configuration['ip'],self.configuration['datachannel_port'])
         
         server_controller = ServerController(datachannel_server,ping_server)
         server_controller.start()
-        server_controller.fire()
-        
+
+        ping_client = PingClient(self.configuration['ip'],self.configuration['ping_port'],self.configuration['id_path'],self.configuration['client_sleep_time'])        
         datachannel_client = DatachannelClient(self.configuration['ip'],self.configuration['datachannel_port'],self.configuration['model_type'],self.configuration['model_path'],self.configuration['input_path'],self.configuration['output_path'],self.configuration['learning_rate'],self.loss_function,self.optimizer)
-        ping_client = PingClient(self.configuration['ip'],self.configuration['ping_port'],self.configuration['id_path'],self.configuration['client_sleep_time'])
-        
+
         client_controller = ClientController(datachannel_client,ping_client)
         client_controller.start()

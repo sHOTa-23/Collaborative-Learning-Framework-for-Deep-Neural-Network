@@ -11,11 +11,11 @@ class PingClient():
         self.ip = ip
         self.port = port
         self.id_path = id_path
-        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server.connect((self.ip, self.port))
         self.sleep_time = sleep_time
 
     def start(self,controller):
+        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server.connect((self.ip, self.port))
         self.controller = controller
         self.run()
 
