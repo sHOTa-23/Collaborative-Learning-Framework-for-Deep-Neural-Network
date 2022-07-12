@@ -12,17 +12,15 @@ def prepare_model(model):
         import h5py
         with h5py.File(buffer, 'w') as f:
             save_model(model, f, include_optimizer=True)
-        logging.info("Keras model saved")
     elif 'sklearn' in model_type or 'sklearn' in model_parent_type:
         from joblib import load, dump
         dump(model, buffer)
-        logging.info("Sklearn model saved")
     elif 'torch' in model_type or 'torch' in model_parent_type:
         import torch
         scripted_model = torch.jit.script(model)
         torch.jit.save(scripted_model, buffer)
-        logging.info("Pytorch model saved")
     buffer.seek(0)
+    logging.debug("Model Prepared")
     return buffer.read()
 
 def receive(client_socket, socket_buffer_size=1024):
@@ -44,8 +42,7 @@ def load_data(file: BytesIO):
     data = file.read()[:-3]
     file.seek(0)
     if b'sklearn' in data:
-        from joblib import load, dump
-        logging.info("Sklearn model loaded")
+        from joblib import load
         return load(file)
     elif b'HDF' in data:
         import tensorflow as tf
@@ -54,10 +51,10 @@ def load_data(file: BytesIO):
         import h5py
         with h5py.File(file, 'r') as f:
             model = load_model(f)
-        logging.info("Keras model loaded")
         return model
     else:
         import torch
         model = torch.jit.load(file)
-        logging.info("Pytorch model loaded")
         return model
+
+

@@ -12,10 +12,12 @@ class PingClient():
         self.port = port
         self.id_path = id_path
         self.sleep_time = sleep_time
+        logging.debug('Ping Client Initialized')
 
     def start(self,controller):
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.connect((self.ip, self.port))
+        logging.debug('Ping Client Connected to server')
         self.controller = controller
         self.run()
 
@@ -35,9 +37,9 @@ class PingClient():
                 id = f.read()
                 self.connect_server_with_id(id)
         f.close()
+        logging.debug('Ping Client Authenticated')
 
     def get_id_from_server(self):
-        # Ping server to get an id
         try:
             self.server.send(b'Give me an id you son of a bitch!')
         except:
@@ -45,7 +47,6 @@ class PingClient():
             self.server.close()
             exit()
 
-        # Get id from server and close in case of failure
         try:
             message = self.server.recv(1024)
             if message.decode() == "":
@@ -59,15 +60,12 @@ class PingClient():
             exit()
 
     def connect_server_with_id(self, id):
-        # Connect server with id
         try:
             self.server.send('Connecting with id:{}'.format(id).encode())
         except:
             logging.warning("In connect_server_with_id, exception raised while sending")
             self.server.close()
             exit()
-
-        # Accept connection from server
         try:
             message = self.server.recv(1024)
             if message.decode() == "":

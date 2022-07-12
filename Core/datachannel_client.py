@@ -3,7 +3,7 @@ import threading
 from io import BytesIO
 import logging
 import pickle
-from Core.utils import prepare_model,receive,load_data
+from Core.utils import prepare_model,receive
 
 logging.basicConfig(level=logging.NOTSET)
 
