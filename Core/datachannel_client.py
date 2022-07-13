@@ -77,6 +77,7 @@ class DatachannelClient():
 
     def send_model(self,array):
         data = prepare_model(array)
+        print('Sent {}'.format(self.id))
         self.server.sendall(self.id.encode())
         self.server.sendall(data)
         self.server.sendall(b'EOF')

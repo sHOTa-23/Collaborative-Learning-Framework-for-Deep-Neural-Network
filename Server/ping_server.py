@@ -82,4 +82,4 @@ class PingServer:
                 logging.debug("Sent start signal to the client: {}".format(client_socket.getpeername()))
             else:
                 client_socket.send(b'not start')
-            self.clientsDB.add_client(client_id)
+            

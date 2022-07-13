@@ -11,7 +11,7 @@ import logging
 logging.basicConfig(level=logging.NOTSET)
 
 #178.62.92.57
-class App:
+class AppServer:
     def __init__(self,configuration_path,loss_function,optimizer = None) -> None:
         self.configuration_path = configuration_path
         self.configuration = self.load_configuration()
@@ -36,11 +36,5 @@ class App:
         
         server_controller = ServerController(datachannel_server,ping_server)
         server_controller.start()
-        
-        ping_client = PingClient(self.configuration['ip'],self.configuration['ping_port'],self.configuration['id_path'],self.configuration['client_sleep_time'])        
-        datachannel_client = DatachannelClient(self.configuration['ip'],self.configuration['datachannel_port'],self.configuration['model_type'],self.configuration['model_path'],self.configuration['input_path'],self.configuration['output_path'],self.configuration['id_path'],self.configuration['learning_rate'],self.loss_function,self.optimizer)
 
-        client_controller = ClientController(datachannel_client,ping_client)
-        client_controller.start()
-
-        logging.debug("Controllers started")
+        logging.debug("Server Controller started")
