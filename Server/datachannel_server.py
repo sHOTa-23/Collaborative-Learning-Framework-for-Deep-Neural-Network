@@ -7,15 +7,19 @@ logging.basicConfig(level=logging.NOTSET)
 
 
 class DatachannelServer:
-    def __init__(self, ip, port,clientsDB, listener_num = 100, gap_time=10):
+    def __init__(self, ip, port,clientsDB, listener_num = 100, gap_time=15):
         self.ip = ip
         self.port = port
         self.listener_num = listener_num
         self.gap_time = gap_time
         self.clientsDB = clientsDB
+        self.server = None
         logging.debug('Datachannel initialized')
         
     def start(self):
+        if self.server is not None and self.server.fileno() != -1:
+            logging.info("Datachannel server is already running")
+            return
         self.last_time = datetime.datetime.now()
         self.barrier = threading.Barrier(2)
         self.received_values = {}

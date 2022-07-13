@@ -3,6 +3,7 @@ import threading
 import secrets
 import datetime
 import logging
+import time
 logging.basicConfig(level=logging.NOTSET)
 
 
@@ -26,6 +27,9 @@ class PingServer:
         logging.debug("Ping Server Has been started on {}:{}".format(self.ip, self.port))
         t = threading.Thread(target=self.run)
         t.start()
+        t1 = threading.Thread(target=self.time_checker)
+        self.is_time = False
+        t1.start()
 
     def run(self):
         while True:
@@ -34,6 +38,18 @@ class PingServer:
             t = threading.Thread(target=self.client_handler, args=(client_socket,))
             t.start()
 
+    def time_checker(self):
+        while True:
+            current_time = datetime.datetime.now()
+            time_diff = current_time - self.starting_time
+            if time_diff.seconds > self.time_interval:
+                logging.debug("Datachanel Server Start Fire Called")
+                self.controller.fire()
+                self.starting_time = current_time
+                self.is_time = True
+            else:
+                self.is_time = False
+            time.sleep(1)
 
     def client_handler(self, client_socket, socket_buffer_size=1024):
         initial_message = client_socket.recv(socket_buffer_size).decode()
@@ -61,11 +77,7 @@ class PingServer:
                 logging.debug("Client {} disconnected".format(client_id))
                 client_socket.close()
                 break
-            time_diff = current_time - self.starting_time
-            if time_diff.seconds > self.time_interval:
-                logging.debug("Datachanel Server Start Fire Called")
-                self.controller.fire()
-                self.starting_time = current_time
+            if self.is_time:
                 client_socket.send(b'start')
                 logging.debug("Sent start signal to the client: {}".format(client_socket.getpeername()))
             else:

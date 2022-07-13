@@ -1,8 +1,8 @@
 ip : 127.0.0.1
-datachannel_port : 9077
-ping_port : 9011
+datachannel_port : 9076
+ping_port : 9009
 mongodb_host : mongodb://localhost:27017/
-id_path : Core/id.txt
+id_path : Core1/id.txt
 client_sleep_time : 1 # Seconds
 model_path : models/keras.h5
 model_type : tensorflow  #possible values: pytorch, tensorflow, sklearn
