@@ -5,6 +5,10 @@ class ServerController:
     
     def start(self):
         self.ping_server.start(self)
+        self.datachanel_server.set_controller(self)
 
     def fire(self):
         self.datachanel_server.start()
+    
+    def fire_ping(self):
+        self.ping_server.is_legal_to_send = True

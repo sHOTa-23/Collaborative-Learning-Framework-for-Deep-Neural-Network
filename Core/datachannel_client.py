@@ -31,6 +31,7 @@ class DatachannelClient():
         self.load_model()
         self.load_input()
         self.calculate_new_waits()
+        print(self.model.trainable_variables)
         self.send_model(self.model)
         
     def connect_server(self):
@@ -70,7 +71,8 @@ class DatachannelClient():
             self.model = load(self.model_path)
         elif self.model_type == "tensorflow":
             import tensorflow as tf
-            tf.get_logger().setLevel(logging.ERROR)
+            tf.autograph.set_verbosity(1)
+            tf.get_logger().setLevel('INFO')
             from tensorflow.keras.models import load_model
             self.model = load_model(self.model_path)
         elif self.model_type == "pytorch":
@@ -85,5 +87,6 @@ class DatachannelClient():
         self.server.sendall(data)
         self.server.sendall(b'EOF')
         logging.info("Model sent by Client")
-        model = receive(self.server)
+        self.model = receive(self.server)
         logging.info("Model Received by Client")
+        print(self.model.trainable_variables)

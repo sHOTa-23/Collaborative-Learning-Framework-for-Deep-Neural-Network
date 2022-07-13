@@ -29,6 +29,7 @@ class PingServer:
         t.start()
         t1 = threading.Thread(target=self.time_checker)
         self.is_time = False
+        self.is_legal_to_send = True
         t1.start()
 
     def run(self):
@@ -42,8 +43,9 @@ class PingServer:
         while True:
             current_time = datetime.datetime.now()
             time_diff = current_time - self.starting_time
-            if time_diff.seconds > self.time_interval:
+            if time_diff.seconds > self.time_interval and self.is_legal_to_send:
                 logging.debug("Datachanel Server Start Fire Called")
+                self.is_legal_to_send = False
                 self.controller.fire()
                 self.starting_time = current_time
                 self.is_time = True

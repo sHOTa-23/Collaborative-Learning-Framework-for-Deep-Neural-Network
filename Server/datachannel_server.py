@@ -2,6 +2,10 @@ import socket
 import threading
 import logging
 import datetime
+
+
+
+
 from Core.utils import prepare_model,receive
 logging.basicConfig(level=logging.NOTSET)
 
@@ -15,6 +19,9 @@ class DatachannelServer:
         self.clientsDB = clientsDB
         self.server = None
         logging.debug('Datachannel initialized')
+    
+    def set_controller(self, controller):
+        self.controller = controller
         
     def start(self):
         if self.server is not None and self.server.fileno() != -1:
@@ -47,7 +54,10 @@ class DatachannelServer:
         except:
             logging.warning('In count_average, barrier broke')
             pass
+        print("REeEccc ", self.received_values)
         for client_socket in self.received_values:
+            model = self.received_values[client_socket]
+            print("Model received: {}".format(model.trainable_variables))
             data = prepare_model(self.received_values[client_socket])
             client_socket.sendall(data)
             client_socket.sendall(b'EOF')
@@ -59,6 +69,7 @@ class DatachannelServer:
         Port = self.port
         fake_server.connect((IP_address, Port))
         logging.debug("Poison packet has been sent to the DataChannel server")
+        self.controller.fire_ping()
 
     def check_time(self):
         while True:
@@ -79,11 +90,14 @@ class DatachannelServer:
             return
         model = receive(client_socket)
         logging.info("Model has been received in datachannel server by {}".format(client_socket.getpeername()))
+        print(model.trainable_variables)
         if client not in self.clientsDB.get_clients():
             client_socket.send(b'I don\'t know you!')
+            print("I don't know you!")
             return
         self.last_time = datetime.datetime.now()
         self.received_values[client_socket] = model
+        print("AAAAABa: ", self.received_values)
 
     def runner_thread(self):
         while True:

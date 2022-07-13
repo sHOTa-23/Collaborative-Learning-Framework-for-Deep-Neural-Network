@@ -7,7 +7,8 @@ def prepare_model(model):
     model_parent_type = str(type(model).__bases__)
     if 'keras' in model_type or 'keras' in model_parent_type:
         import tensorflow as tf
-        tf.get_logger().setLevel(logging.ERROR)
+        tf.autograph.set_verbosity(1)
+        tf.get_logger().setLevel('INFO')
         from tensorflow.keras.models import save_model
         import h5py
         with h5py.File(buffer, 'w') as f:
@@ -34,6 +35,7 @@ def receive(client_socket, socket_buffer_size=1024):
         if b'EOF' in buffer.read():
             break
     buffer.seek(0)
+    
     model = load_data(buffer)
     logging.info("Model Receiving finished")
     return model
@@ -41,18 +43,21 @@ def receive(client_socket, socket_buffer_size=1024):
 def load_data(file: BytesIO):
     data = file.read()[:-3]
     file.seek(0)
+    print(file)
+    print(b'HDF' in data, b'h5' in data)
     if b'sklearn' in data:
         from joblib import load
         return load(file)
-    elif b'HDF' or b'h5' in data:
+    elif b'HDF' in data or b'h5' in data:
         import tensorflow as tf
-        tf.get_logger().setLevel(logging.ERROR)
+        tf.autograph.set_verbosity(1)
+        tf.get_logger().setLevel('INFO')
         from tensorflow.keras.models import load_model
         import h5py
         with h5py.File(file, 'r') as f:
             model = load_model(f)
         return model
-    else:
+    elif b'torch' in data:
         import torch
         model = torch.jit.load(file)
         return model
