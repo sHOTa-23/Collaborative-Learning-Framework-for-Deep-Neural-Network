@@ -71,6 +71,7 @@ class DatachannelServer:
                 break
 
     def client_handler(self, client_socket):
+        client_socket.send(b'Giving permission to start')
         client = client_socket.recv(1024).decode()
         logging.info("ID has been received in datachannel server by {}".format(client_socket.getpeername()))
         if self.barrier.broken:

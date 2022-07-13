@@ -27,6 +27,7 @@ class DatachannelClient():
             self.id = f.read()
         f.close()
         self.connect_server()
+
         self.load_model()
         self.load_input()
         self.calculate_new_waits()
@@ -36,6 +37,8 @@ class DatachannelClient():
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.connect((self.ip, self.port))
         logging.debug("Connected to server")
+        # Waiting for server to get permission to continue
+        self.server.recv(1024)
 
     def calculate_new_waits(self):
         if self.model_type == "pytorch":
