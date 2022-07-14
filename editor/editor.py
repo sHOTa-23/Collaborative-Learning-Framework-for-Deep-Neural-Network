@@ -20,7 +20,6 @@ class Editor(object):
                 return True
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:
-                    print("AAAAAAAA")
                     if len(self.text) > 1:
                         self.text = self.text[:len(self.text)-1]
                     else:

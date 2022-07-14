@@ -3,6 +3,7 @@ import threading
 import logging
 import os
 import time
+import datetime
 logging.basicConfig(level=logging.NOTSET)
 
 
@@ -12,6 +13,7 @@ class PingClient():
         self.port = port
         self.id_path = id_path
         self.sleep_time = sleep_time
+        self.should_ask = True
         logging.debug('Ping Client Initialized')
 
     def start(self,controller):
@@ -77,10 +79,20 @@ class PingClient():
             self.server.close()
             exit()
 
+    def change_status(self):
+        self.should_ask = True
+    def get_status(self):
+        return self.should_ask
     def ping_thread(self):
         while True:
             self.server.send(b'Ping')
             message = self.server.recv(1024).decode('utf-8')
-            if message  == "start":
+            print("Should should_ask status: {}".format(self.should_ask))
+            if message  == "start" and self.should_ask:
+                self.should_ask = False
+                logging.info("Ping Client Fired" + str(datetime.datetime.now().strftime("%H:%M:%S")))
                 self.controller.fire()
+                
+            elif message == "start":
+                logging.info("Ping Client Received start signal but is already connected")
             time.sleep(self.sleep_time)

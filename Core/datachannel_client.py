@@ -23,23 +23,21 @@ class DatachannelClient():
         logging.debug("Datachannel client initialized")
 
     def start(self):
+        logging.debug("Datachannel client started")
         with open(self.id_path) as f:
             self.id = f.read()
         f.close()
         self.connect_server()
-
         self.load_model()
         self.load_input()
         self.calculate_new_waits()
-        print(self.model.trainable_variables)
         self.send_model(self.model)
         
     def connect_server(self):
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.connect((self.ip, self.port))
-        logging.debug("Connected to server")
+        logging.debug("Connected to server from {}".format(self.server.getsockname()))
         # Waiting for server to get permission to continue
-        self.server.recv(1024)
 
     def calculate_new_waits(self):
         if self.model_type == "pytorch":
@@ -80,13 +78,35 @@ class DatachannelClient():
             self.model = torch.jit.load(self.model_path)
         logging.info(f"{self.model_type} Model loaded")     
 
+    def set_controller(self,controller):
+        self.controller = controller
+    
+
     def send_model(self,array):
-        data = prepare_model(array)
-        print('Sent {}'.format(self.id))
+        message = self.server.recv(1024).decode()
+        if message == 'start':
+            logging.debug("Server ready to receive model")
+        else :
+            logging.debug("Server did not receive start message instead received: " + message)
+        
+        logging.info('client Sent ID: {}'.format(self.id))
         self.server.sendall(self.id.encode())
+        status = self.server.recv(1024).decode()
+        if status == 'Id Verified':
+            logging.debug("Server received ID")
+        data = prepare_model(array)
+       
         self.server.sendall(data)
         self.server.sendall(b'EOF')
         logging.info("Model sent by Client")
-        self.model = receive(self.server)
-        logging.info("Model Received by Client")
-        print(self.model.trainable_variables)
+        message = self.server.recv(1024).decode()
+        if message == 'calculation completed':
+            logging.debug("Server ready to receive new model")
+            logging.info(str(self.controller.ping_client.get_status()) + " Before")
+            self.controller.fire_ping()
+            logging.info(str(self.controller.ping_client.get_status()) + " After")
+        else:
+            logging.debug("Server did not receive calculation completed message instead received: " + message)
+        # self.model = receive(self.server)
+        # print(list(self.model.parameters()))
+        # logging.info("Model Received by Client")

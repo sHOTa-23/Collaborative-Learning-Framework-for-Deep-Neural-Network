@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.NOTSET)
 
 
 class DatachannelServer:
-    def __init__(self, ip, port,clientsDB, listener_num = 100, gap_time=15):
+    def __init__(self, ip, port,clientsDB, listener_num = 100, gap_time=20):
         self.ip = ip
         self.port = port
         self.listener_num = listener_num
@@ -20,8 +20,6 @@ class DatachannelServer:
         self.server = None
         logging.debug('Datachannel initialized')
     
-    def set_controller(self, controller):
-        self.controller = controller
         
     def start(self):
         if self.server is not None and self.server.fileno() != -1:
@@ -48,28 +46,57 @@ class DatachannelServer:
         main_thread.start()
         logging.debug('main_thread started')
 
+    def calculate_average(self):
+        import torch
+        keys = list(self.received_values.keys())
+        print("SDASDASDASDASD",self.received_values)
+        if len(keys) == 0:
+            return None
+        init_weights = self.received_values[keys[0]]
+       
+        print("Before")
+        for key in keys:
+            for i in self.received_values[key].parameters():
+                print(i)
+            print("Another Model")
+        for mdl in range(1,len(keys)):
+            with torch.no_grad():
+                for (i,j) in zip(init_weights.parameters(),self.received_values[keys[mdl]].parameters()):
+                    i+=j 
+        
+        print("After")
+        for i in init_weights.parameters():
+            print(i)
+        with torch.no_grad():
+            for i in init_weights.parameters():
+                i/=len(keys)
+        
+        return init_weights
+        
+    
     def count_average(self):
         try:
             self.barrier.wait()
         except:
             logging.warning('In count_average, barrier broke')
             pass
-        print("REeEccc ", self.received_values)
-        for client_socket in self.received_values:
-            model = self.received_values[client_socket]
-            print("Model received: {}".format(model.trainable_variables))
-            data = prepare_model(self.received_values[client_socket])
-            client_socket.sendall(data)
-            client_socket.sendall(b'EOF')
-            logging.info('Data sent to client {}'.format(client_socket.getpeername()))
+        averaged_model = self.calculate_average()
+        
+        # for client_socket in self.received_values:
+        #     data = prepare_model(averaged_model)
+        #     client_socket.sendall(data)
+        #     client_socket.sendall(b'EOF')
+        #     logging.info('Data sent to client {}'.format(client_socket.getpeername()))
         
         # Interrupt server.accept() with fake connection
+        
         fake_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         IP_address = self.ip
         Port = self.port
         fake_server.connect((IP_address, Port))
+        for client_socket in self.received_values:
+            client_socket.send(b'calculation completed')
         logging.debug("Poison packet has been sent to the DataChannel server")
-        self.controller.fire_ping()
 
     def check_time(self):
         while True:
@@ -82,22 +109,23 @@ class DatachannelServer:
                 break
 
     def client_handler(self, client_socket):
-        client_socket.send(b'Giving permission to start')
-        client = client_socket.recv(1024).decode()
+        client_socket.send(b'start')
+        client = client_socket.recv(1024)
+        client = client.decode('utf-8')
+        client_socket.send(b'Id Verified')
         logging.info("ID has been received in datachannel server by {}".format(client_socket.getpeername()))
         if self.barrier.broken:
             client_socket.send(b'I won\'t receive connections anymore!')
             return
+        # message = int(client_socket.recv(1024).decode())
         model = receive(client_socket)
         logging.info("Model has been received in datachannel server by {}".format(client_socket.getpeername()))
-        print(model.trainable_variables)
         if client not in self.clientsDB.get_clients():
             client_socket.send(b'I don\'t know you!')
             print("I don't know you!")
             return
         self.last_time = datetime.datetime.now()
         self.received_values[client_socket] = model
-        print("AAAAABa: ", self.received_values)
 
     def runner_thread(self):
         while True:

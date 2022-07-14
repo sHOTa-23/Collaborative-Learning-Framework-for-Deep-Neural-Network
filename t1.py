@@ -1,6 +1,4 @@
-# # import torch
-# # import torch.nn as nn
-# # import torch.nn.functional as F
+
 
 # # # class Net(nn.Module):
 
@@ -26,28 +24,52 @@
 # # #         x = self.fc3(x)
 # # #         return x
 
-# # model = nn.Sequential(nn.Linear(2, 3),
-# #                       nn.ReLU(),
-# #                       nn.Linear(3, 1),
-# #                       nn.Sigmoid())
+
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+# import itertools 
+# a = torch.jit.load('models/torch.pt')
+# b = torch.jit.load('models/torch.pt')
+# print(list(a.parameters()))
+# with torch.no_grad():
+#     for (i,j) in zip(a.parameters(),b.parameters()):
+#     # print(i)
+#     # print("______")
+#     # print(j)
+#     # print("++++++")
+#     # print(i+j)
+#     # print("====")
+#         i+=j 
+# for (i,j) in zip(a.parameters(),b.parameters()):
+#     print(i)
+#     print("######")
+#     print(j)
+#     print("######")
+    
+
+    # [tensor([[ 0.4771,  0.2509],
+    #     [-0.0405, -0.4350],
+    #     [-0.4727, -0.2470]], requires_grad=True), tensor([-0.6241, -0.2363,  0.5567], requires_grad=True), tensor([[-0.3088, -0.4424
 
 
-# # # MSE_loss_fn = nn.MSELoss()
-# # # from t2 import A
-# # # a = A(torch.Tensor([[1,2,3],[4,5,6]]),torch.Tensor([[1,2,3],[4,5,6]]),MSE_loss_fn)
-# # # print(a.bla())
-# # input = torch.randn(2)
-# # output = torch.Tensor([0.2131231])
 
-# # import pickle 
-# # pickle.dump(input, open("input.pkl", "wb"))
-# # pickle.dump(output, open("output.pkl", "wb"))
+model = nn.Sequential(nn.Linear(2, 3),
+                      nn.ReLU(),
+                      nn.Linear(3, 1),
+                      nn.Sigmoid())
+m = torch.jit.script(model)
+torch.jit.save(m, 'torch1.pt')
+input = torch.randn(2)
+output = torch.Tensor([0.123123])
+
+import pickle 
+pickle.dump(input, open("torchinp1.pkl", "wb"))
+pickle.dump(output, open("torchout1.pkl", "wb"))
 # # # print(output)
 # # # print(output1)
 # # # print(input)
-# # m = torch.jit.script(model)
 
-# # torch.jit.save(m, '1.pt')
 
 # # # import tensorflow as tf
 # # # import numpy as np
@@ -166,10 +188,10 @@
 
 # import torch
 
-import socket
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-server.bind(("127.0.0.1", 9076))
-server.close()
-print(server)       
-print(server.fileno())
+# import socket
+# server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+# server.bind(("127.0.0.1", 9076))
+# server.close()
+# print(server)       
+# print(server.fileno())

@@ -43,8 +43,6 @@ def receive(client_socket, socket_buffer_size=1024):
 def load_data(file: BytesIO):
     data = file.read()[:-3]
     file.seek(0)
-    print(file)
-    print(b'HDF' in data, b'h5' in data)
     if b'sklearn' in data:
         from joblib import load
         return load(file)
