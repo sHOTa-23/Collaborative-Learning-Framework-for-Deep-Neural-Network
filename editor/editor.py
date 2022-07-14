@@ -6,21 +6,22 @@ MARGIN_TOP = 50
 BLACK = (0,0,0)
 WHITE = (255,255,255)
 RED = (255,0,0)
+SENTENCES_LOCATION = "data/sentences.txt"
 
 class Editor(object):
     def __init__(self):
         self.text = ""
-        self.font = pygame.font.SysFont("Calibri",25,True,False) 
+        self.font = pygame.font.SysFont(  "Calibri",25,True,False) 
         self.text_list = []
+        self.current_sentence = ""
         
 
-    def process_events(self):
+    def process_events(self, prediction):
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT:
                 return True
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:
-                    print("AAAAAAAA")
                     if len(self.text) > 1:
                         self.text = self.text[:len(self.text)-1]
                     else:
@@ -28,8 +29,17 @@ class Editor(object):
                 elif event.key == pygame.K_RETURN:
                     self.add_new_line()
                 else:
-                    self.text += event.unicode
-                
+                    new_char = event.unicode
+                    self.text += new_char
+                    self.current_sentence += new_char 
+                    if event.key == pygame.K_SPACE:
+                        prediction.fill_predictions()
+                    if event.key == pygame.K_PERIOD:
+                        with open(SENTENCES_LOCATION, "a+") as fl:
+                            fl.write(self.current_sentence + '\n')
+                            self.current_sentence = ""
+
+
 
         return False
 

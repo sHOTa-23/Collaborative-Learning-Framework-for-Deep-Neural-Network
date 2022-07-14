@@ -15,7 +15,7 @@ def main():
     editor = Editor()
     prediction = Prediction()
     while not done:
-        done = editor.process_events()
+        done = editor.process_events(prediction)
         editor.run_logic()
         editor.display_frame(screen)
         prediction.render(screen)
