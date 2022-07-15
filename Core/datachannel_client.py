@@ -22,16 +22,19 @@ class DatachannelClient():
         self.optimizer = optimizer
         logging.debug("Datachannel client initialized")
 
-    def start(self):
+    def start(self, controller):
         logging.debug("Datachannel client started")
         with open(self.id_path) as f:
             self.id = f.read()
         f.close()
+        self.controller = controller
         self.connect_server()
+        self.controller.updating_lock.acquire()
         self.load_model()
         self.load_input()
         self.calculate_new_waits()
         self.send_model(self.model)
+        self.controller.updating_lock.release()
         
     def connect_server(self):
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

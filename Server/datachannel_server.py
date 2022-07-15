@@ -21,10 +21,11 @@ class DatachannelServer:
         logging.debug('Datachannel initialized')
     
         
-    def start(self):
+    def start(self, server_controller):
         if self.server is not None and self.server.fileno() != -1:
             logging.info("Datachannel server is already running")
             return
+        self.server_controller = server_controller
         self.last_time = datetime.datetime.now()
         self.barrier = threading.Barrier(2)
         self.received_values = {}
@@ -79,6 +80,7 @@ class DatachannelServer:
             self.barrier.wait()
         except:
             logging.warning('In count_average, barrier broke')
+            self.server_controller.version_updating.acquire()
             pass
         averaged_model = self.calculate_average()
         
@@ -96,7 +98,9 @@ class DatachannelServer:
         fake_server.connect((IP_address, Port))
         for client_socket in self.received_values:
             client_socket.send(b'calculation completed')
+        self.server_controller.increase_version()
         logging.debug("Poison packet has been sent to the DataChannel server")
+        self.server_controller.version_updating.release()
 
     def check_time(self):
         while True:

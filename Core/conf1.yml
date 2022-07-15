@@ -9,3 +9,4 @@ model_type : pytorch  #possible values: pytorch, tensorflow, sklearn
 input_path: inputs/torchinp1.pkl
 output_path: outputs/torchout1.pkl
 learning_rate : 1.7
+model_fake_path: models/fake/model1v0.txt

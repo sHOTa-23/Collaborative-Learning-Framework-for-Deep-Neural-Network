@@ -79,7 +79,18 @@ class PingServer:
                 logging.debug("Client {} disconnected".format(client_id))
                 client_socket.close()
                 break
-            if self.is_time:
+            client_version = int(data)
+            logging.info('Version of the client\'s model is {}'.format(client_version))
+            if client_version < self.controller.get_version():
+                self.controller.version_updating.acquire()
+                client_socket.send(b'update')
+                print(client_socket.recv(1024).decode())
+                client_socket.send(str(self.controller.get_version()).encode())
+                print(client_socket.recv(1024).decode())
+                client_socket.send(str(10 + self.controller.get_version()).encode())
+                print(client_socket.recv(1024).decode())
+                self.controller.version_updating.release()
+            elif self.is_time:
                 client_socket.send(b'start')
                 logging.debug("Sent start signal to the client: {}".format(client_socket.getpeername()))
             else:

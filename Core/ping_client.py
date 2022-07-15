@@ -8,12 +8,14 @@ logging.basicConfig(level=logging.NOTSET)
 
 
 class PingClient():
-    def __init__(self, ip, port, id_path, sleep_time):
+    def __init__(self, ip, port, id_path, model_path, sleep_time):
         self.ip = ip
         self.port = port
         self.id_path = id_path
+        self.model_path = model_path
         self.sleep_time = sleep_time
         self.should_ask = True
+        self.updating = False
         logging.debug('Ping Client Initialized')
 
     def start(self,controller):
@@ -81,18 +83,52 @@ class PingClient():
 
     def change_status(self):
         self.should_ask = True
+    
     def get_status(self):
         return self.should_ask
+
+    def change_updating_status(self):
+        self.updating = False
+
+    def get_updating_status(self):
+        return self.updating
+
     def ping_thread(self):
         while True:
-            self.server.send(b'Ping')
+            self.server.send(str(self.controller.get_version()).encode())
             message = self.server.recv(1024).decode('utf-8')
             print("Should should_ask status: {}".format(self.should_ask))
             if message  == "start" and self.should_ask:
                 self.should_ask = False
-                logging.info("Ping Client Fired" + str(datetime.datetime.now().strftime("%H:%M:%S")))
+                logging.info("Ping Client Fired " + str(datetime.datetime.now().strftime("%H:%M:%S")))
                 self.controller.fire()
-                
             elif message == "start":
                 logging.info("Ping Client Received start signal but is already connected")
+            elif message == "update" and not self.updating:
+                self.updating = True
+                logging.info("Started updating model at " + str(datetime.datetime.now().strftime("%H:%M:%S")))
+                self.controller.updating_lock.acquire()
+                self.update_model()
+                self.controller.updating_lock.release()
+            elif message == "update":
+                logging.info("Updating model not done yet")
             time.sleep(self.sleep_time)
+
+    def update_model(self):
+        print('started updating')
+        self.server.send(b'Send version and model')
+        new_version = int(self.server.recv(1024).decode())
+        self.server.send(b'Received version')
+        new_model = int(self.server.recv(1024).decode())
+        new_model_path = self.model_path[:self.model_path.rfind('v') + 1] + str(new_version) + self.model_path[self.model_path.rfind('.'):]
+        if not os.path.exists(new_model_path):
+            with open(new_model_path, 'x') as f:
+                self.model_path = new_model_path
+                f.write(str(new_model))
+        else:
+            with open(new_model_path, 'w') as f:
+                self.model_path = new_model_path
+                f.write(str(new_model))
+        self.server.send(b'Finished updating')
+        self.controller.set_version(new_version)
+        self.change_updating_status()
