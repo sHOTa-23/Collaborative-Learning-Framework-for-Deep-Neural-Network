@@ -1,11 +1,12 @@
 from editor import WHITE,BLACK,RED
 from editor import SCREEN_HEIGHT, SCREEN_WIDTH
 import pygame
+from random import randint
 
 NUMBER_OF_PREDICTIONS = 5
 PREDICTIONS_HEIGHT = 45
 CELL_WIDTH = SCREEN_WIDTH / NUMBER_OF_PREDICTIONS
-
+RANDOM_WORDS = ["painter", "sector", "reproduction", "seller", "rape", "easy", "build", "eject", "announcement", "digress", "recover", "adviser", "speech", "crackpot", "frown", "sin", "the", "and", "custody", "middle", "combine"]
 
 class Prediction:
     def __init__(self) -> None:
@@ -43,5 +44,7 @@ class Prediction:
 
         pygame.display.flip()
     
-    def add_predictions(self, *predictions):
-        self.predictions = predictions
+    def fill_predictions(self):
+        self.predictions = []
+        for i in range(len(RANDOM_WORDS)): 
+            self.predictions.append(RANDOM_WORDS[randint(0, len(RANDOM_WORDS) - 1)])
