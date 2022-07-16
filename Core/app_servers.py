@@ -28,8 +28,8 @@ class AppServer:
             return
         logging.debug("Configuration is valid")
         clientDB = ClientsRepository(self.configuration['mongodb_host'])
-        ping_server = PingServer(self.configuration['ip'],self.configuration['ping_port'],clientDB,self.configuration['server_model_path'])
-        datachannel_server = DatachannelServer(self.configuration['ip'],self.configuration['datachannel_port'],clientDB,self.configuration['server_model_path'])
+        ping_server = PingServer(self.configuration['ip'],self.configuration['ping_port'],clientDB,self.configuration['server_model_path'],self.configuration['model_type'])
+        datachannel_server = DatachannelServer(self.configuration['ip'],self.configuration['datachannel_port'],clientDB,self.configuration['server_model_path'],self.configuration['model_type'])
         
         server_controller = ServerController(datachannel_server,ping_server)
         server_controller.start()

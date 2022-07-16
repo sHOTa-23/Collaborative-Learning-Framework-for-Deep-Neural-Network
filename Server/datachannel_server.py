@@ -6,15 +6,16 @@ import datetime
 
 
 
-from Core.utils import prepare_model,receive
+from Core.utils import prepare_model,receive,save_model
 logging.basicConfig(level=logging.NOTSET)
 
 
 class DatachannelServer:
-    def __init__(self, ip, port,clientsDB,server_model_path,listener_num = 100, gap_time=20):
+    def __init__(self, ip, port,clientsDB,server_model_path,model_type,listener_num = 100, gap_time=20):
         self.ip = ip
         self.port = port
         self.server_model_path = server_model_path
+        self.model_type = model_type
         self.listener_num = listener_num
         self.gap_time = gap_time
         self.clientsDB = clientsDB
@@ -66,21 +67,22 @@ class DatachannelServer:
                 for (i,j) in zip(init_weights.parameters(),self.received_values[keys[mdl]].parameters()):
                     i+=j 
         
-        print("After")
-        for i in init_weights.parameters():
-            print(i)
         with torch.no_grad():
             for i in init_weights.parameters():
                 i/=len(keys)
         
+        print("After")
+        for i in init_weights.parameters():
+            print(i)
+        
         return init_weights
         
-    def save_model(self,model):
-        import torch
-        self.model_name = 'model_' + str(self.server_controller.get_version()) + '.pt'
-        m = torch.jit.script(model)
-        torch.jit.save(m, 'torch1.pt')
-        logging.info("Averaged Model has been saved on Server")
+    # def save_model(self,model):
+    #     import torch
+    #     self.model_name = 'model_' + str(self.server_controller.get_version()) + '.pt'
+    #     m = torch.jit.script(model)
+    #     torch.jit.save(m, 'torch1.pt')
+    #     logging.info("Averaged Model has been saved on Server")
     
     def count_average(self):
         try:
@@ -90,8 +92,10 @@ class DatachannelServer:
             self.server_controller.version_updating.acquire()
             pass
         averaged_model = self.calculate_average()
-        self.save_model(averaged_model)
-        
+        self.server_controller.increase_version()
+        whole_path = self.server_model_path + '/' + 'model_' + str(self.server_controller.get_version()) + '.pt'
+        print(whole_path)
+        save_model(self.model_type,whole_path,averaged_model)
         # for client_socket in self.received_values:
         #     data = prepare_model(averaged_model)
         #     client_socket.sendall(data)
@@ -106,7 +110,6 @@ class DatachannelServer:
         fake_server.connect((IP_address, Port))
         for client_socket in self.received_values:
             client_socket.send(b'calculation completed')
-        self.server_controller.increase_version()
         logging.debug("Poison packet has been sent to the DataChannel server")
         self.server_controller.version_updating.release()
 

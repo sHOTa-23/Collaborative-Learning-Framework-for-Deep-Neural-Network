@@ -32,7 +32,7 @@ class DatachannelClient():
         self.controller.updating_lock.acquire()
         self.model = load_model(self.model_type,self.model_path)
         self.load_input()
-        self.calculate_new_waits()
+        self.calculate_new_weights()
         self.send_model(self.model)
         self.controller.updating_lock.release()
         
@@ -42,7 +42,7 @@ class DatachannelClient():
         logging.debug("Connected to server from {}".format(self.server.getsockname()))
         # Waiting for server to get permission to continue
 
-    def calculate_new_waits(self):
+    def calculate_new_weights(self):
         if self.model_type == "pytorch":
             out = self.model(self.input)
             import torch

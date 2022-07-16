@@ -42,6 +42,20 @@ def load_model(model_type,model_path):
     logging.info(f"{model_type} Model loaded")  
     return model
     
+def save_model(model_type,model_name,model):
+    if model_type == 'pytorch':
+        import torch
+        m = torch.jit.script(model)
+        torch.jit.save(m, model_name)
+    elif model_type == 'tensorflow':
+        import tensorflow as tf
+        tf.autograph.set_verbosity(1)
+        tf.get_logger().setLevel('INFO')
+        from tensorflow.keras.models import save_model
+        import h5py
+        with h5py.File(model_name, 'w') as f:
+            save_model(model, f, include_optimizer=True)
+    logging.info("Averaged Model has been saved on Server")
 
 def receive(client_socket, socket_buffer_size=1024):
     buffer = BytesIO()

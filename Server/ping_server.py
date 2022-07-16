@@ -4,16 +4,17 @@ import secrets
 import datetime
 import logging
 import time
-from Core.utils import prepare_model,receive
+from Core.utils import prepare_model,load_model
 logging.basicConfig(level=logging.NOTSET)
 
 
 class PingServer:
-    def __init__(self, ip, port,clientsDB,server_model_path,starting_time = datetime.datetime.now(),time_interval = 6, listener_num = 100):
+    def __init__(self, ip, port,clientsDB,server_model_path,model_type,starting_time = datetime.datetime.now(),time_interval = 6, listener_num = 100):
         self.ip = ip
         self.port = port
         self.clientsDB = clientsDB
         self.server_model_path = server_model_path
+        self.model_type = model_type
         self.starting_time = starting_time
         self.time_interval = time_interval
         self.listener_num = listener_num
@@ -89,7 +90,12 @@ class PingServer:
                 print(client_socket.recv(1024).decode())
                 client_socket.send(str(self.controller.get_version()).encode())
                 print(client_socket.recv(1024).decode())
-                client_socket.send(str(10 + self.controller.get_version()).encode())
+                model_path = self.server_model_path + 'model_' + str(self.controller.get_version()) + '.pt'
+                model = load_model(self.model_type,model_path)
+                data = prepare_model(model)
+                client_socket.sendall(data)
+                client_socket.sendall(b'EOF')
+                logging.info("Averaged Model Sent to {}".format(client_socket.getpeername()))
                 print(client_socket.recv(1024).decode())
                 self.controller.version_updating.release()
             elif self.is_time:

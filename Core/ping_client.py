@@ -4,15 +4,17 @@ import logging
 import os
 import time
 import datetime
+from Core.utils import receive,save_model
 logging.basicConfig(level=logging.NOTSET)
 
 
 class PingClient():
-    def __init__(self, ip, port, id_path, model_path, sleep_time):
+    def __init__(self, ip, port, id_path, model_path,model_type, sleep_time):
         self.ip = ip
         self.port = port
         self.id_path = id_path
         self.model_path = model_path
+        self.model_type = model_type
         self.sleep_time = sleep_time
         self.should_ask = True
         self.updating = False
@@ -115,20 +117,13 @@ class PingClient():
             time.sleep(self.sleep_time)
 
     def update_model(self):
-        print('started updating')
         self.server.send(b'Send version and model')
         new_version = int(self.server.recv(1024).decode())
         self.server.send(b'Received version')
-        new_model = int(self.server.recv(1024).decode())
-        new_model_path = self.model_path[:self.model_path.rfind('v') + 1] + str(new_version) + self.model_path[self.model_path.rfind('.'):]
-        if not os.path.exists(new_model_path):
-            with open(new_model_path, 'x') as f:
-                self.model_path = new_model_path
-                f.write(str(new_model))
-        else:
-            with open(new_model_path, 'w') as f:
-                self.model_path = new_model_path
-                f.write(str(new_model))
+        new_model = receive(self.server)
+        print(self.model_path)
+        save_model(self.model_type,self.model_path,new_model)
+        logging.info("Model updated to version {}".format(new_version))
         self.server.send(b'Finished updating')
         self.controller.set_version(new_version)
         self.change_updating_status()
