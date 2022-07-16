@@ -11,9 +11,10 @@ logging.basicConfig(level=logging.NOTSET)
 
 
 class DatachannelServer:
-    def __init__(self, ip, port,clientsDB, listener_num = 100, gap_time=20):
+    def __init__(self, ip, port,clientsDB,server_model_path,listener_num = 100, gap_time=20):
         self.ip = ip
         self.port = port
+        self.server_model_path = server_model_path
         self.listener_num = listener_num
         self.gap_time = gap_time
         self.clientsDB = clientsDB
@@ -74,6 +75,12 @@ class DatachannelServer:
         
         return init_weights
         
+    def save_model(self,model):
+        import torch
+        self.model_name = 'model_' + str(self.server_controller.get_version()) + '.pt'
+        m = torch.jit.script(model)
+        torch.jit.save(m, 'torch1.pt')
+        logging.info("Averaged Model has been saved on Server")
     
     def count_average(self):
         try:
@@ -83,6 +90,7 @@ class DatachannelServer:
             self.server_controller.version_updating.acquire()
             pass
         averaged_model = self.calculate_average()
+        self.save_model(averaged_model)
         
         # for client_socket in self.received_values:
         #     data = prepare_model(averaged_model)

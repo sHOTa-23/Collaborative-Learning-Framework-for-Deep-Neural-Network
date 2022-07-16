@@ -4,14 +4,16 @@ import secrets
 import datetime
 import logging
 import time
+from Core.utils import prepare_model,receive
 logging.basicConfig(level=logging.NOTSET)
 
 
 class PingServer:
-    def __init__(self, ip, port,clientsDB,starting_time = datetime.datetime.now(),time_interval = 6, listener_num = 100):
+    def __init__(self, ip, port,clientsDB,server_model_path,starting_time = datetime.datetime.now(),time_interval = 6, listener_num = 100):
         self.ip = ip
         self.port = port
         self.clientsDB = clientsDB
+        self.server_model_path = server_model_path
         self.starting_time = starting_time
         self.time_interval = time_interval
         self.listener_num = listener_num

@@ -3,7 +3,7 @@ import threading
 from io import BytesIO
 import logging
 import pickle
-from Core.utils import prepare_model,receive
+from Core.utils import prepare_model,load_model
 
 logging.basicConfig(level=logging.NOTSET)
 
@@ -30,7 +30,7 @@ class DatachannelClient():
         self.controller = controller
         self.connect_server()
         self.controller.updating_lock.acquire()
-        self.load_model()
+        self.model = load_model(self.model_type,self.model_path)
         self.load_input()
         self.calculate_new_waits()
         self.send_model(self.model)
@@ -66,20 +66,7 @@ class DatachannelClient():
         self.output = pickle.load(open(self.output_path, 'rb'))
         logging.info("Input and Output Loaded")
 
-    def load_model(self):
-        if self.model_type == "sklearn":
-            from joblib import load
-            self.model = load(self.model_path)
-        elif self.model_type == "tensorflow":
-            import tensorflow as tf
-            tf.autograph.set_verbosity(1)
-            tf.get_logger().setLevel('INFO')
-            from tensorflow.keras.models import load_model
-            self.model = load_model(self.model_path)
-        elif self.model_type == "pytorch":
-            import torch
-            self.model = torch.jit.load(self.model_path)
-        logging.info(f"{self.model_type} Model loaded")     
+       
 
     def set_controller(self,controller):
         self.controller = controller

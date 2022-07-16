@@ -24,6 +24,25 @@ def prepare_model(model):
     logging.debug("Model Prepared")
     return buffer.read()
 
+
+def load_model(model_type,model_path):
+    model = None
+    if model_type == "sklearn":
+        from joblib import load
+        model = load(model_path)
+    elif model_type == "tensorflow":
+        import tensorflow as tf
+        tf.autograph.set_verbosity(1)
+        tf.get_logger().setLevel('INFO')
+        from tensorflow.keras.models import load_model
+        model = load_model(model_path)
+    elif model_type == "pytorch":
+        import torch
+        model = torch.jit.load(model_path)
+    logging.info(f"{model_type} Model loaded")  
+    return model
+    
+
 def receive(client_socket, socket_buffer_size=1024):
     buffer = BytesIO()
     while True:
