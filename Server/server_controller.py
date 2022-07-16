@@ -6,6 +6,7 @@ class ServerController:
         self.ping_server = ping_server
         self.version = 0
         self.version_updating = threading.Lock()
+        self.version_lock = threading.Lock()
     
     def start(self):
         self.ping_server.start(self)
@@ -14,8 +15,13 @@ class ServerController:
         self.datachanel_server.start(self)
 
     def get_version(self):
-        return self.version
+        self.version_lock.acquire()
+        cur_version = self.version
+        self.version_lock.release()
+        return cur_version
 
     def increase_version(self):
+        self.version_lock.acquire()
         self.version = self.version + 1
+        self.version_lock.release()
    
