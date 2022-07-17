@@ -6,7 +6,7 @@ import datetime
 
 
 
-from Core.utils import prepare_model,receive,save_model
+from Server.utils import prepare_model,receive,save_model
 logging.basicConfig(level=logging.NOTSET)
 
 

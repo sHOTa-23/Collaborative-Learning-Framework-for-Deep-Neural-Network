@@ -4,7 +4,7 @@ import secrets
 import datetime
 import logging
 import time
-from Core.utils import prepare_model,load_model
+from Server.utils import prepare_model,load_model
 logging.basicConfig(level=logging.NOTSET)
 
 

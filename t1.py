@@ -53,6 +53,7 @@ import torch.nn.functional as F
     #     [-0.4727, -0.2470]], requires_grad=True), tensor([-0.6241, -0.2363,  0.5567], requires_grad=True), tensor([[-0.3088, -0.4424
 
 
+seq_size = 3
 
 model = nn.Sequential(nn.Linear(2, 3),
                       nn.ReLU(),
@@ -141,24 +142,21 @@ pickle.dump(output, open("torchout1.pkl", "wb"))
 
 # import logging
 # logging.getLogger('tensorflow').disabled = True
-from tensorflow import keras
-import tensorflow as tf
-from tensorflow.keras import layers
-import numpy as np
+# 
 
 
-input_dim = (28, 28)
-# get output dimensions 10 classes
-output_dim = 3
+# input_dim = (28, 28)
+# # get output dimensions 10 classes
+# output_dim = 3
 
-# create sequential model
-model = keras.Sequential()
-model.add(layers.Flatten(input_shape=input_dim))
-model.add(layers.Dense(units=128, activation='relu'))
-model.add(layers.BatchNormalization())
-model.add(layers.Dense(units=128, activation='relu'))
-model.add(layers.BatchNormalization())
-model.add(layers.Dense(units=output_dim))
+# # create sequential model
+# model = keras.Sequential()
+# model.add(layers.Flatten(input_shape=input_dim))
+# model.add(layers.Dense(units=128, activation='relu'))
+# model.add(layers.BatchNormalization())
+# model.add(layers.Dense(units=128, activation='relu'))
+# model.add(layers.BatchNormalization())
+# model.add(layers.Dense(units=output_dim))
 
 
 # model.save('keras.h5')
