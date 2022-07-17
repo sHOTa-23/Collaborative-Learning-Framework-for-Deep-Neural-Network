@@ -9,11 +9,12 @@ RED = (255,0,0)
 SENTENCES_LOCATION = "data/sentences.txt"
 
 class Editor(object):
-    def __init__(self):
+    def __init__(self,model):
         self.text = ""
         self.font = pygame.font.SysFont(  "Calibri",25,True,False) 
         self.text_list = []
         self.current_sentence = ""
+        self.model = model
         
 
     def process_events(self, prediction):
@@ -33,7 +34,9 @@ class Editor(object):
                     self.text += new_char
                     self.current_sentence += new_char 
                     if event.key == pygame.K_SPACE:
-                        prediction.fill_predictions()
+                        words = self.current_sentence.split()
+                        if len(words) >= 3:
+                            prediction.fill_predictions(words[-3:],self.model)
                     if event.key == pygame.K_PERIOD:
                         with open(SENTENCES_LOCATION, "a+") as fl:
                             fl.write(self.current_sentence + '\n')

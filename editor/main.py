@@ -2,6 +2,7 @@
 import pygame
 from prediction import Prediction
 from editor import Editor
+from model import Model
 
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 700
@@ -12,7 +13,8 @@ def main():
     pygame.display.set_caption("Text Editor")
     done = False
     clock = pygame.time.Clock()
-    editor = Editor()
+    model = Model('bla.pt','a.txt')
+    editor = Editor(model)
     prediction = Prediction()
     while not done:
         done = editor.process_events(prediction)

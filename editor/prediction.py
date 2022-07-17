@@ -10,7 +10,7 @@ RANDOM_WORDS = ["painter", "sector", "reproduction", "seller", "rape", "easy", "
 
 class Prediction:
     def __init__(self) -> None:
-        self.predictions = ["A", "ABCDEFGHIJKLMNOPQRST", "BBBBB", "GGGGG", "ASDASDAS", "GSERYRETYRET"]
+        self.predictions = ['პირველი','რანდომ','ხუთი','სიტყვა','აგერ']
         self.font = pygame.font.SysFont("Calibri",22,True,False)
 
 
@@ -44,7 +44,5 @@ class Prediction:
 
         pygame.display.flip()
     
-    def fill_predictions(self):
-        self.predictions = []
-        for i in range(len(RANDOM_WORDS)): 
-            self.predictions.append(RANDOM_WORDS[randint(0, len(RANDOM_WORDS) - 1)])
+    def fill_predictions(self,words,model):
+        self.predictions = model.predict(words,NUMBER_OF_PREDICTIONS)
