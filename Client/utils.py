@@ -68,7 +68,6 @@ def receive(client_socket, socket_buffer_size=1024):
         if b'EOF' in buffer.read():
             break
     buffer.seek(0)
-    
     model = load_data(buffer)
     logging.info("Model Receiving finished")
     return model
@@ -85,7 +84,6 @@ def load_data(file: BytesIO):
         tf.get_logger().setLevel('INFO')
         from tensorflow.keras.models import load_model
         import h5py
-
         with h5py.File(file, 'r') as f:
             model = load_model(f)
         return model

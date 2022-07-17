@@ -3,7 +3,7 @@ import os
 class Validator:
     def __init__(self, yaml_dict):
         self.yaml_dict = yaml_dict
-        self.keys = set(['ip', 'datachannel_port', 'mongodb_host','ping_port', 'model_type', 'server_model_path'])
+        self.keys = set(['ip', 'datachannel_port', 'ping_port','mongodb_host', 'model_type', 'server_model_path'])
         self.validate()
     
     def validate(self):
@@ -13,7 +13,7 @@ class Validator:
         if self.yaml_dict['model_type'] not in ['sklearn', 'tensorflow','pytorch']:
             raise Exception("Model type '{}' not supported".format(self.yaml_dict['model_type']))
         if not os.path.exists(self.yaml_dict['server_model_path']):
-            raise Exception("Server model path '{}' not found".format(self.yaml_dict['server_model_path']))
+            raise Exception("Model path '{}' not found".format(self.yaml_dict['server_model_path']))
 
         
         

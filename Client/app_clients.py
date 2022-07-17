@@ -3,6 +3,7 @@ from Client.datachannel_client import DatachannelClient
 from Client.ping_client import PingClient
 from Client.yaml_validator import Validator
 from Client.client_controller import ClientController
+from Client.ClientsRepository import ClientsRepository
 import logging
 logging.basicConfig(level=logging.NOTSET)
 

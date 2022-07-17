@@ -7,6 +7,6 @@ import torch.nn as nn
 # #Tensorflow mse loss function
 # loss = tf.keras.losses.MSE
 loss = nn.MSELoss()
-app = AppClient('Client/conf1.yml', loss)
+app = AppClient('Client/conf1.yml',loss)
 app.run()
 
