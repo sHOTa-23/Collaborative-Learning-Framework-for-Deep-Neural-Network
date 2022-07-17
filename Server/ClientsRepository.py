@@ -9,7 +9,7 @@ class ClientsRepository:
 
     def add_client(self, id):
         # self.clients.insert_one({'id': id})
-        self.clients.append("id")
+        self.clients.append(id)
 
     def get_clients(self):
         # cur_clients = [client['id'] for client in self.clients.find()]
