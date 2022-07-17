@@ -3,7 +3,7 @@ from Server.datachannel_server import DatachannelServer
 from Server.ping_server import PingServer
 from Server.yaml_validator import Validator
 from Server.server_controller import ServerController
-from Client.ClientsRepository import ClientsRepository
+from Server.ClientsRepository import ClientsRepository
 import logging
 logging.basicConfig(level=logging.NOTSET)
 
