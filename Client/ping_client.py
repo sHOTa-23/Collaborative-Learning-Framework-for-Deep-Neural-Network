@@ -120,7 +120,7 @@ class PingClient():
         self.server.send(b'Send version and model')
         new_version = int(self.server.recv(1024).decode())
         self.server.send(b'Received version')
-        new_model = receive(self.server)
+        new_model = receive(self.server,self.model_type)
         print(self.model_path)
         save_model(self.model_type,self.model_path,new_model)
         logging.info("Model updated to version {}".format(new_version))

@@ -57,7 +57,7 @@ def save_model(model_type,model_name,model):
             save_model(model, f)
     logging.info("Averaged Model has been saved on Server")
 
-def receive(client_socket, socket_buffer_size=1024):
+def receive(client_socket,model_type, socket_buffer_size=1024):
     buffer = BytesIO()
     while True:
         data = client_socket.recv(socket_buffer_size)
@@ -68,17 +68,17 @@ def receive(client_socket, socket_buffer_size=1024):
         if b'EOF' in buffer.read():
             break
     buffer.seek(0)
-    model = load_data(buffer)
+    model = load_data(buffer,model_type)
     logging.info("Model Receiving finished")
     return model
 
-def load_data(file: BytesIO):
+def load_data(file: BytesIO,model_type):
     data = file.read()[:-3]
     file.seek(0)
-    if b'sklearn' in data:
+    if model_type == 'sklearn':
         from joblib import load
         return load(file)
-    elif b'HDF' in data or b'h5' in data:
+    elif model_type == 'tensorflow':
         import tensorflow as tf
         tf.autograph.set_verbosity(1)
         tf.get_logger().setLevel('INFO')
@@ -87,7 +87,7 @@ def load_data(file: BytesIO):
         with h5py.File(file, 'r') as f:
             model = load_model(f)
         return model
-    elif b'torch' in data:
+    elif model_type == 'pytorch':
         import torch
         model = torch.jit.load(file)
         return model

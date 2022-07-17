@@ -3,8 +3,8 @@ datachannel_port : 9920
 ping_port : 9921
 id_path : Client/id1.txt
 client_sleep_time : 1 # Seconds
-model_path : models/torch1.pt
+model_path : Editor/bla.pt
 model_type : pytorch  #possible values: pytorch, tensorflow, sklearn
-input_path: inputs/torchinp1.pkl
-output_path: outputs/torchout1.pkl
+input_path: Editor/inp.pkl
+output_path: Editor/out.pkl
 learning_rate : 1.7

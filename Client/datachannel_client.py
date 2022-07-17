@@ -3,6 +3,7 @@ import threading
 from io import BytesIO
 import logging
 import pickle
+import os
 from Client.utils import prepare_model,load_model
 
 logging.basicConfig(level=logging.NOTSET)
@@ -64,6 +65,8 @@ class DatachannelClient():
     def load_input(self):
         self.input = pickle.load(open(self.input_path, 'rb'))
         self.output = pickle.load(open(self.output_path, 'rb'))
+        # os.remove(self.input_path)
+        # os.remove(self.output_path)
         logging.info("Input and Output Loaded")
 
        

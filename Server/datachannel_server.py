@@ -126,12 +126,6 @@ class DatachannelServer:
         whole_path = self.server_model_path + '/' + 'model_' + str(self.server_controller.get_version()) + '.pt'
         print(whole_path)
         save_model(self.model_type,whole_path,averaged_model)
-        # for client_socket in self.received_values:
-        #     data = prepare_model(averaged_model)
-        #     client_socket.sendall(data)
-        #     client_socket.sendall(b'EOF')
-        #     logging.info('Data sent to client {}'.format(client_socket.getpeername()))
-        
         # Interrupt server.accept() with fake connection
         
         fake_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -165,7 +159,7 @@ class DatachannelServer:
             client_socket.send(b'I won\'t receive connections anymore!')
             return
         # message = int(client_socket.recv(1024).decode())
-        model = receive(client_socket)
+        model = receive(client_socket,self.model_type)
         logging.info("Model has been received in datachannel server by {}".format(client_socket.getpeername()))
         if client not in self.clientsDB.get_clients():
             client_socket.send(b'I don\'t know you!')

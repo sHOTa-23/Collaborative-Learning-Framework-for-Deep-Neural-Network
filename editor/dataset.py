@@ -1,10 +1,14 @@
 from string import punctuation
 import numpy as np
+import torch
+import pickle 
+import os
 class Dataset:
-    def __init__(self,text_path):
+    def __init__(self,text_path,seq_size):
         self.text_path = text_path
         self.georgian_alphabet = 'აბგდევზთიკლმნოპჟრსტუფქღყშჩცძწჭხჯჰ'
         self.init_dataset()
+        self.seq_size = seq_size
         
     def remove_punct(self,line):
         for punct in punctuation:
@@ -48,5 +52,45 @@ class Dataset:
         for i in top_values:
             top_words.append(self.word_set[i])
         return top_words
+    def prepare_words(self,words):
+        words = [self.remove_punct(word) for word in words]
+        tokens = [self.get_one_hot_vector(token) for token in words]
+        vector = []
+        for token in tokens:
+            vector.extend(token)
+        vector = torch.tensor(vector, dtype=torch.float32)
+        return vector
+    
+    def save_words_in_pickle(self,words,input_path,output_path):
+        input_vector = None
+        output_vector = None
+        for i in range(len(words)//(self.seq_size+1)):
+            curr_input = []
+            curr_output = []
+            for j in range(self.seq_size):
+                curr_input.append(words[i*(self.seq_size+1)+j])
+            curr_output.append(words[i*(self.seq_size+1)+self.seq_size])
+            curr_input = self.prepare_words(curr_input)
+            curr_output = self.prepare_words(curr_output)
+            if input_vector is None:
+                input_vector = curr_input
+                output_vector = curr_output
+            else:
+                if i == 1:
+                    input_vector = torch.cat((input_vector,curr_input)).reshape(2,input_vector.shape[0])
+                    output_vector = torch.cat((output_vector,curr_output)).reshape(2,output_vector.shape[0])
+                else:
+                    input_vector = torch.cat((input_vector.reshape(input_vector.shape[0]*input_vector.shape[1]),curr_input)).reshape(input_vector.shape[0]+1,input_vector.shape[1])
+                    output_vector = torch.cat((output_vector.reshape(output_vector.shape[0]*output_vector.shape[1]),curr_output)).reshape(output_vector.shape[0]+1,output_vector.shape[1])
+        
+        if os.path.exists(input_path):
+            prev_input = pickle.load(open(input_path,'rb'))
+            prev_output = pickle.load(open(output_path,'rb'))
+            input_vector = torch.cat((prev_input.reshape(prev_input.shape[0]*prev_input.shape[1]),input_vector.reshape(input_vector.shape[0]*input_vector.shape[1]))).reshape(input_vector.shape[0]+prev_input.shape[0],input_vector.shape[1])
+            output_vector = torch.cat((prev_output.reshape(prev_output.shape[0]*prev_output.shape[1]),output_vector.reshape(output_vector.shape[0]*output_vector.shape[1]))).reshape(output_vector.shape[0]+prev_output.shape[0],output_vector.shape[1])
+        pickle.dump(input_vector,open(input_path,'wb'))
+        pickle.dump(output_vector,open(output_path,'wb'))
+        
+
     
         
