@@ -1,0 +1,10 @@
+ip : 127.0.0.1
+datachannel_port : 9920
+ping_port : 9921
+id_path : Core/id.txt
+client_sleep_time : 1
+model_path : models/torch.pt
+model_type : pytorch
+input_path: inputs/torchinp.pkl
+output_path: outputs/torchout.pkl
+learning_rate : 1.7

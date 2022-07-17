@@ -1,0 +1,6 @@
+ip : 127.0.0.1
+datachannel_port : 9920
+ping_port : 9921
+mongodb_host : mongodb://localhost:27017/
+model_type : tensorflow
+server_model_path: models/server/
