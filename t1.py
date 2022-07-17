@@ -139,27 +139,29 @@ pickle.dump(output, open("torchout1.pkl", "wb"))
 # # # # save
 # # # joblib.dump(clf, "model.pkl") 
 
-# from tensorflow import keras
-# import tensorflow as tf
-# from tensorflow.keras import layers
-# import numpy as np
+# import logging
+# logging.getLogger('tensorflow').disabled = True
+from tensorflow import keras
+import tensorflow as tf
+from tensorflow.keras import layers
+import numpy as np
 
-# input_dim = (28, 28)
-# # get output dimensions 10 classes
-# output_dim = 3
 
-# # create sequential model
-# model = keras.Sequential()
-# model.add(layers.Flatten(input_shape=input_dim))
-# model.add(layers.Dense(units=128, activation='relu'))
-# model.add(layers.BatchNormalization())
-# model.add(layers.Dense(units=128, activation='relu'))
-# model.add(layers.BatchNormalization())
-# model.add(layers.Dense(units=output_dim))
+input_dim = (28, 28)
+# get output dimensions 10 classes
+output_dim = 3
+
+# create sequential model
+model = keras.Sequential()
+model.add(layers.Flatten(input_shape=input_dim))
+model.add(layers.Dense(units=128, activation='relu'))
+model.add(layers.BatchNormalization())
+model.add(layers.Dense(units=128, activation='relu'))
+model.add(layers.BatchNormalization())
+model.add(layers.Dense(units=output_dim))
 
 
 # model.save('keras.h5')
-
 
 
 
@@ -195,3 +197,9 @@ pickle.dump(output, open("torchout1.pkl", "wb"))
 # server.close()
 # print(server)       
 # print(server.fileno())
+# tensor([[ 0.2382, -0.2422],
+#         [ 0.1850,  0.3093],
+#         [-0.1741,  0.1017]], requires_grad=True)
+# tensor([ 0.1356, -0.0988,  0.1130], requires_grad=True)
+# tensor([[-0.2004,  0.1014,  0.0943]], requires_grad=True)
+# tensor([-1.1506], requires_grad=True)

@@ -28,7 +28,7 @@ class DatachannelServer:
             logging.info("Datachannel server is already running")
             return
         self.server_controller = server_controller
-        self.last_time = datetime.datetime.now()
+        self.last_time = None
         self.barrier = threading.Barrier(2)
         self.received_values = {}
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -50,33 +50,63 @@ class DatachannelServer:
         logging.debug('main_thread started')
 
     def calculate_average(self):
-        import torch
-        keys = list(self.received_values.keys())
-        print("SDASDASDASDASD",self.received_values)
-        if len(keys) == 0:
-            return None
-        init_weights = self.received_values[keys[0]]
-       
-        print("Before")
-        for key in keys:
-            for i in self.received_values[key].parameters():
-                print(i)
-            print("Another Model")
-        for mdl in range(1,len(keys)):
+        if self.model_type == "pytorch":
+            import torch
+            keys = list(self.received_values.keys())
+            print("SDASDASDASDASD",self.received_values)
+            if len(keys) == 0:
+                return None
+            init_weights = self.received_values[keys[0]]
+        
+            print("Before")
+            for key in keys:
+                for i in self.received_values[key].parameters():
+                    print(i)
+                print("Another Model")
+            for mdl in range(1,len(keys)):
+                with torch.no_grad():
+                    for (i,j) in zip(init_weights.parameters(),self.received_values[keys[mdl]].parameters()):
+                        i+=j 
+            
             with torch.no_grad():
-                for (i,j) in zip(init_weights.parameters(),self.received_values[keys[mdl]].parameters()):
-                    i+=j 
-        
-        with torch.no_grad():
+                for i in init_weights.parameters():
+                    i/=len(keys)
+            
+            print("After")
             for i in init_weights.parameters():
-                i/=len(keys)
+                print(i)
+            
+            return init_weights
+        elif self.model_type == "tensorflow":
+            models = list(self.received_values.values())
+            if len(models) == 0:
+                print("AAABa")
+                return None
+            import tensorflow as tf
+            print("Before")
+            for model in models:
+                for layer in model.layers:
+                    print(layer.get_weights())
+                    print("\n")
+
+            for model in models[1:]:
+                for (layer0,layer1) in zip(models[0].layers,model.layers):
+                    curr_weights = layer0.get_weights()
+                    weights = layer1.get_weights()
+                    for i in range(len(curr_weights)):
+                        curr_weights[i] = curr_weights[i] + weights[i]
+                    layer0.set_weights(curr_weights)
         
-        print("After")
-        for i in init_weights.parameters():
-            print(i)
-        
-        return init_weights
-        
+            for layer in models[0].layers:
+                curr_weights = layer.get_weights()
+                for i in range(len(curr_weights)):
+                    curr_weights[i] = curr_weights[i] / len(models)
+                layer.set_weights(curr_weights)
+            print("After")
+            for layer in models[0].layers:
+                print(layer.get_weights())
+                print("\n")
+            return models[0]  
     # def save_model(self,model):
     #     import torch
     #     self.model_name = 'model_' + str(self.server_controller.get_version()) + '.pt'
@@ -115,6 +145,8 @@ class DatachannelServer:
 
     def check_time(self):
         while True:
+            if self.last_time is None:
+                continue
             current_time = datetime.datetime.now()
             dif = current_time - self.last_time
             dif = dif.total_seconds()
