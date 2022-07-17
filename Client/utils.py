@@ -46,6 +46,8 @@ def save_model(model_type,model_name,model):
     if model_type == 'pytorch':
         import torch
         m = torch.jit.script(model)
+        print(m)
+        print(model_name)
         torch.jit.save(m, model_name)
     elif model_type == 'tensorflow':
         import tensorflow as tf

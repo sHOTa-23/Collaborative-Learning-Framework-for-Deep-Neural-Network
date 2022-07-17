@@ -100,3 +100,4 @@ class DatachannelClient():
             logging.info(str(self.controller.ping_client.get_status()) + " After")
         else:
             logging.debug("Server did not receive calculation completed message instead received: " + message)
+            self.controller.fire_ping()
