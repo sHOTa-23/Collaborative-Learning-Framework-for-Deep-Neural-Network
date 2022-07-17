@@ -9,11 +9,9 @@ logging.basicConfig(level=logging.NOTSET)
 
 #178.62.92.57
 class AppServer:
-    def __init__(self,configuration_path,loss_function,optimizer = None) -> None:
+    def __init__(self,configuration_path) -> None:
         self.configuration_path = configuration_path
         self.configuration = self.load_configuration()
-        self.loss_function = loss_function
-        self.optimizer = optimizer
     
     def load_configuration(self) -> dict:
         with open(self.configuration_path) as f:

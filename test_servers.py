@@ -6,6 +6,5 @@ import torch.nn as nn
 # optimizer = tf.keras.optimizers.SGD(learning_rate=1.7)
 #Tensorflow mse loss function
 # loss = tf.keras.losses.MSE
-loss = nn.MSELoss()
-app = AppServer('Core/conf.yml',loss)
+app = AppServer('Core/conf.yml')
 app.run()
