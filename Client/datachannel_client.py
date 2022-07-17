@@ -100,6 +100,3 @@ class DatachannelClient():
             logging.info(str(self.controller.ping_client.get_status()) + " After")
         else:
             logging.debug("Server did not receive calculation completed message instead received: " + message)
-        # self.model = receive(self.server)
-        # print(list(self.model.parameters()))
-        # logging.info("Model Received by Client")
