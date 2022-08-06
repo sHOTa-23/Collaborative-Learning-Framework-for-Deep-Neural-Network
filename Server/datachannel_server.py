@@ -2,9 +2,7 @@ import socket
 import threading
 import logging
 import datetime
-
-
-
+import os
 
 from Server.utils import prepare_model,receive,save_model
 logging.basicConfig(level=logging.NOTSET)
@@ -123,11 +121,17 @@ class DatachannelServer:
             pass
         averaged_model = self.calculate_average()
         self.server_controller.increase_version()
-        whole_path = self.server_model_path + '/' + 'model_' + str(self.server_controller.get_version()) + '.pt'
+
+        whole_path = self.server_model_path + '/' + 'model_' + str(self.server_controller.get_version())
+        if self.model_type == "pytorch":
+            whole_path += '.pt'
+        elif self.model_type == "tensorflow":
+            whole_path += '.h5'
         print(whole_path)
+        for f in os.listdir(self.server_model_path):
+            os.remove(os.path.join(self.server_model_path, f))
         save_model(self.model_type,whole_path,averaged_model)
         # Interrupt server.accept() with fake connection
-        
         fake_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         IP_address = self.ip
         Port = self.port

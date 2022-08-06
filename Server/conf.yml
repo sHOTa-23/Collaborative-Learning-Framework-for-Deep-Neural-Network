@@ -1,4 +1,4 @@
-ip : 178.62.92.57
+ip : 127.0.0.1
 datachannel_port : 9920
 ping_port : 9921
 mongodb_host : mongodb://localhost:27017/
