@@ -3,7 +3,7 @@ import os
 class Validator:
     def __init__(self, yaml_dict):
         self.yaml_dict = yaml_dict
-        self.keys = set(['ip', 'datachannel_port', 'ping_port','mongodb_host', 'model_type', 'server_model_path'])
+        self.keys = set(['ip', 'datachannel_port', 'ping_port','mongodb_host', 'model_type', 'server_model_path', 'datachannel_time_interval'])
         self.validate()
     
     def validate(self):
