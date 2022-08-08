@@ -4,3 +4,4 @@ ping_port : 9921
 mongodb_host : mongodb://localhost:27017/
 model_type : pytorch  #possible values: pytorch, tensorflow, sklearn
 server_model_path: models/server/
+datachannel_time_interval: 6

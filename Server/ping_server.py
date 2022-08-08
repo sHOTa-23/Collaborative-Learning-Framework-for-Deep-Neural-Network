@@ -9,7 +9,7 @@ logging.basicConfig(level=logging.NOTSET)
 
 
 class PingServer:
-    def __init__(self, ip, port,clientsDB,server_model_path,model_type,starting_time = datetime.datetime.now(),time_interval = 6, listener_num = 100):
+    def __init__(self, ip, port,clientsDB,server_model_path,model_type,time_interval,starting_time = datetime.datetime.now(), listener_num = 100):
         self.ip = ip
         self.port = port
         self.clientsDB = clientsDB

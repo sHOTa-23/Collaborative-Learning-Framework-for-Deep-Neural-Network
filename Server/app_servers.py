@@ -11,8 +11,12 @@ logging.basicConfig(level=logging.NOTSET)
 #178.62.92.57
 class AppServer:
     def __init__(self,configuration_path) -> None:
+        print(configuration_path)
         self.configuration_path = configuration_path
         self.configuration = self.load_configuration()
+        with open("droebit.txt", "w+") as f:
+            f.write(self.configuration['datachannel_time_interval'])
+        print(self.configuration)
     
     def load_configuration(self) -> dict:
         with open(self.configuration_path) as f:
@@ -27,7 +31,7 @@ class AppServer:
             return
         logging.debug("Configuration is valid")
         clientDB = ClientsRepository(self.configuration['mongodb_host'])
-        ping_server = PingServer(self.configuration['ip'],self.configuration['ping_port'],clientDB,self.configuration['server_model_path'],self.configuration['model_type'])
+        ping_server = PingServer(self.configuration['ip'],self.configuration['ping_port'],clientDB,self.configuration['server_model_path'],self.configuration['model_type'], self.configuration['datachannel_time_interval'])
         datachannel_server = DatachannelServer(self.configuration['ip'],self.configuration['datachannel_port'],clientDB,self.configuration['server_model_path'],self.configuration['model_type'])
         
         path = self.configuration['server_model_path']

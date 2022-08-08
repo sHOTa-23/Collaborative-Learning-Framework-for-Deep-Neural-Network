@@ -1,0 +1,7 @@
+ip : 127.0.0.1
+datachannel_port : 9920
+ping_port : 9921
+mongodb_host : mongodb://localhost:27017/
+model_type : pytorch  #possible values: pytorch, tensorflow, sklearn
+server_model_path: ../Example/models/server/
+datachannel_time_interval: 6
