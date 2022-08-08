@@ -1,4 +1,5 @@
 import yaml
+import os
 from Server.datachannel_server import DatachannelServer
 from Server.ping_server import PingServer
 from Server.yaml_validator import Validator
@@ -33,7 +34,13 @@ class AppServer:
         ping_server = PingServer(self.configuration['ip'],self.configuration['ping_port'],clientDB,self.configuration['server_model_path'],self.configuration['model_type'], self.configuration['datachannel_time_interval'])
         datachannel_server = DatachannelServer(self.configuration['ip'],self.configuration['datachannel_port'],clientDB,self.configuration['server_model_path'],self.configuration['model_type'])
         
-        server_controller = ServerController(datachannel_server,ping_server)
+        path = self.configuration['server_model_path']
+        highest_version = 0
+        for f in os.listdir(path):
+            cur_version = int(f[f.find('_')+1:f.find('.')])
+            highest_version = max(highest_version, cur_version)
+
+        server_controller = ServerController(datachannel_server,ping_server,highest_version)
         server_controller.start()
 
         logging.debug("Server Controller started")

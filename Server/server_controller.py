@@ -1,10 +1,10 @@
 import threading
 
 class ServerController:
-    def __init__(self,datachanel_server,ping_server):
+    def __init__(self,datachanel_server,ping_server,version=0):
         self.datachanel_server = datachanel_server
         self.ping_server = ping_server
-        self.version = 0
+        self.version = version
         self.version_updating = threading.Lock()
         self.version_lock = threading.Lock()
     
