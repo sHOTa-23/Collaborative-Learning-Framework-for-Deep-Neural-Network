@@ -15,7 +15,7 @@ class AppServer:
         self.configuration_path = configuration_path
         self.configuration = self.load_configuration()
         with open("droebit.txt", "w+") as f:
-            f.write(self.configuration['datachannel_time_interval'])
+            f.write(str(self.configuration['datachannel_time_interval']))
         print(self.configuration)
     
     def load_configuration(self) -> dict:

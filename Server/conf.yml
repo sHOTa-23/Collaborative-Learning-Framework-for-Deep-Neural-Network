@@ -1,7 +1,7 @@
 ip : 127.0.0.1
 datachannel_port : 9920
 ping_port : 9921
-mongodb_host : mongodb://localhost:27017/
+mongodb_host : mongodb+srv://doadmin:g12k79jU8L3y0u5t@db-mongodb-nyc3-12601-daeda50b.mongo.ondigitalocean.com/admin?authSource=admin&replicaSet=db-mongodb-nyc3-12601&tls=true
 model_type : pytorch  #possible values: pytorch, tensorflow, sklearn
 server_model_path: models/server/
 datachannel_time_interval: 6
