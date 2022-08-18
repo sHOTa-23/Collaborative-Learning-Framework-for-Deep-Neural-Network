@@ -10,10 +10,11 @@ logging.basicConfig(level=logging.NOTSET)
 
 #178.62.92.57
 class AppServer:
-    def __init__(self,configuration_path) -> None:
+    def __init__(self,configuration_path,score_fn) -> None:
         print(configuration_path)
         self.configuration_path = configuration_path
         self.configuration = self.load_configuration()
+        self.score_fn = score_fn
         with open("droebit.txt", "w+") as f:
             f.write(str(self.configuration['datachannel_time_interval']))
         print(self.configuration)
@@ -32,7 +33,7 @@ class AppServer:
         logging.debug("Configuration is valid")
         clientDB = ClientsRepository(self.configuration['mongodb_host'])
         ping_server = PingServer(self.configuration['ip'],self.configuration['ping_port'],clientDB,self.configuration['server_model_path'],self.configuration['model_type'], self.configuration['datachannel_time_interval'])
-        datachannel_server = DatachannelServer(self.configuration['ip'],self.configuration['datachannel_port'],clientDB,self.configuration['server_model_path'],self.configuration['model_type'])
+        datachannel_server = DatachannelServer(self.configuration['ip'],self.configuration['datachannel_port'],clientDB,self.configuration['server_model_path'],self.configuration['model_type'],self.configuration['golden_data_input_path'],self.configuration['golden_data_output_path'],self.score_fn)
         
         path = self.configuration['server_model_path']
         highest_version = 0

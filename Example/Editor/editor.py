@@ -41,7 +41,7 @@ class Editor(object):
                     if event.key == pygame.K_PERIOD:
                         words = self.current_sentence.split()
                         if len(words) >= 3:
-                            self.dataset.save_words_in_pickle(self.current_sentence,'inp.pkl','out.pkl')
+                            self.dataset.save_words_in_pickle(words,'inp.pkl','out.pkl')
                         self.current_sentence = ""
 
 

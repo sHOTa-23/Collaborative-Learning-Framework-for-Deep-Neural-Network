@@ -1,5 +1,6 @@
 from io import BytesIO
 import logging
+import pickle
 logging.basicConfig(level=logging.NOTSET)
 def prepare_model(model):
     buffer = BytesIO()
@@ -92,4 +93,7 @@ def load_data(file: BytesIO,model_type):
         model = torch.jit.load(file)
         return model
 
-
+def load_input(input_path,output_path):
+    input_data = pickle.load(open(input_path, 'rb'))
+    output_data = pickle.load(open(output_path, 'rb'))
+    return input_data,output_data

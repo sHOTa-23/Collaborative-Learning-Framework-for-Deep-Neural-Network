@@ -4,12 +4,13 @@ import logging
 import datetime
 import os
 
-from Server.utils import prepare_model,receive,save_model
+
+from Server.utils import prepare_model,receive,save_model,load_input
 logging.basicConfig(level=logging.NOTSET)
 
 
 class DatachannelServer:
-    def __init__(self, ip, port,clientsDB,server_model_path,model_type,listener_num = 100, gap_time=20):
+    def __init__(self, ip, port,clientsDB,server_model_path,model_type,golden_data_input,golden_data_output,score_fn,listener_num = 100, gap_time=20):
         self.ip = ip
         self.port = port
         self.server_model_path = server_model_path
@@ -18,6 +19,8 @@ class DatachannelServer:
         self.gap_time = gap_time
         self.clientsDB = clientsDB
         self.server = None
+        self.golden_data_input,self.golden_data_output = load_input(golden_data_input,golden_data_output)
+        self.score_fn = score_fn
         logging.debug('Datachannel initialized')
     
         
@@ -47,6 +50,7 @@ class DatachannelServer:
         main_thread.start()
         logging.debug('main_thread started')
 
+    
     def calculate_average(self):
         if self.model_type == "pytorch":
             import torch
@@ -55,16 +59,20 @@ class DatachannelServer:
             if len(keys) == 0:
                 return None
             init_weights = self.received_values[keys[0]]
-        
+            averaging_weight = self.score_fn(init_weights(self.golden_data_input),self.golden_data_output)
+            with torch.no_grad():
+                for i in init_weights.parameters():
+                    i*=averaging_weight
             print("Before")
             for key in keys:
                 for i in self.received_values[key].parameters():
                     print(i)
                 print("Another Model")
             for mdl in range(1,len(keys)):
+                averaging_weight = self.score_fn(self.received_values[keys[mdl]](self.golden_data_input),self.golden_data_output)
                 with torch.no_grad():
                     for (i,j) in zip(init_weights.parameters(),self.received_values[keys[mdl]].parameters()):
-                        i+=j 
+                        i+=averaging_weight*j 
             
             with torch.no_grad():
                 for i in init_weights.parameters():
@@ -86,13 +94,20 @@ class DatachannelServer:
                 for layer in model.layers:
                     print(layer.get_weights())
                     print("\n")
-
+            model = models[0]
+            averaging_weight = self.score_fn(model(self.golden_data_input),self.golden_data_output)
+            for layer in model.layers:
+                curr_weights = layer.get_weights()
+                for i in range(len(curr_weights)):
+                    curr_weights[i] = curr_weights[i] * averaging_weight
+                layer.set_weights(curr_weights)
             for model in models[1:]:
+                averaging_weight = self.score_fn(model(self.golden_data_input),self.golden_data_output)
                 for (layer0,layer1) in zip(models[0].layers,model.layers):
                     curr_weights = layer0.get_weights()
                     weights = layer1.get_weights()
                     for i in range(len(curr_weights)):
-                        curr_weights[i] = curr_weights[i] + weights[i]
+                        curr_weights[i] = curr_weights[i] + averaging_weight*weights[i]
                     layer0.set_weights(curr_weights)
         
             for layer in models[0].layers:
