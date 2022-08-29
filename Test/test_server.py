@@ -1,10 +1,10 @@
 import pytest
+import sys
+sys.path.insert(0,"../")
 from Client.app_clients import AppClient
 import torch.nn as nn
 import socket
 import time
-import sys
-sys.path.insert(0,"..")
 import threading
 import yaml
 
@@ -13,11 +13,17 @@ conf = None
 with open('server_conf.yml') as f:
     conf = yaml.safe_load(f)
 
+def score_fn(pred,golden):
+    ans_index = golden.argmax(dim=1)
+    score = (pred.argmax(dim=1) == ans_index).sum().item()/ans_index.shape[0]
+    if score == 0:
+        return 0.5
+    return score
 
 
 @pytest.fixture
 def start_server():
-    app = AppServer('server_conf.yml')
+    app = AppServer('server_conf.yml',score_fn)
     app.run()
 
 @pytest.fixture

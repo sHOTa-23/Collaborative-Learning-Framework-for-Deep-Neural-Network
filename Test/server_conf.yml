@@ -1,7 +1,9 @@
 ip : 127.0.0.1
-datachannel_port : 9920
-ping_port : 9921
-mongodb_host : mongodb://localhost:27017/
+datachannel_port : 9922
+ping_port : 9923
+mongodb_host : mongodb+srv://doadmin:g12k79jU8L3y0u5t@db-mongodb-nyc3-12601-daeda50b.mongo.ondigitalocean.com/admin?authSource=admin&replicaSet=db-mongodb-nyc3-12601&tls=true
 model_type : pytorch  #possible values: pytorch, tensorflow, sklearn
 server_model_path: ../Example/models/server/
 datachannel_time_interval: 6
+golden_data_input_path: goldeninp.pkl
+golden_data_output_path: goldenout.pkl

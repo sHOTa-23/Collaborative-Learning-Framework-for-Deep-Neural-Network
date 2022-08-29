@@ -68,6 +68,7 @@ class PingServer:
             client_socket.send(client_id.encode())
             logging.debug("ID has been sent to new Client")
         else:
+            print(initial_message, " awwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww")
             client_id = initial_message[initial_message.index(':') + 1:]
             if client_id in clients:
                 client_socket.send(b'Oh I know you!')
