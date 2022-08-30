@@ -47,7 +47,25 @@ def test_server_ping_conn():
     
     assert err == None
 
+
+def test_getting_id():
+    s = socket.socket(
+        socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((conf['ip'], conf['ping_port']))
+
+    s.send(b'Give me an id you son of a bitch!')
+    err = None
+    try:
+        message = s.recv(1024)
+        assert message.decode() != ""
+    except socket.error as e:
+        err = e
+
+    assert err == None
+
+
 start_server()
 test_server_ping_conn()
 test_server_datachannel_conn()
+test_getting_id()
 os._exit(1)
