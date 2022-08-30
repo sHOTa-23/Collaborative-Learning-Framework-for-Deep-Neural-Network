@@ -59,6 +59,7 @@ class PingServer:
     def client_handler(self, client_socket, socket_buffer_size=1024):
         initial_message = client_socket.recv(socket_buffer_size).decode()
         logging.debug("Message has been received to Ping Server")
+        
         clients = self.clientsDB.get_clients()
         if initial_message == 'Give me an id you son of a bitch!':
             client_id = secrets.token_hex(16)
@@ -67,8 +68,9 @@ class PingServer:
             self.clientsDB.add_client(client_id)
             client_socket.send(client_id.encode())
             logging.debug("ID has been sent to new Client")
+        elif initial_message == '':
+            return
         else:
-            print(initial_message, " awwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww")
             client_id = initial_message[initial_message.index(':') + 1:]
             if client_id in clients:
                 client_socket.send(b'Oh I know you!')

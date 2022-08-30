@@ -1,4 +1,3 @@
-import pytest
 import sys
 sys.path.insert(0,"../")
 from Client.app_clients import AppClient
@@ -7,6 +6,7 @@ import socket
 import time
 import threading
 import yaml
+import os
 
 from Server.app_servers import AppServer
 conf = None
@@ -20,21 +20,12 @@ def score_fn(pred,golden):
         return 0.5
     return score
 
-
-@pytest.fixture
 def start_server():
     app = AppServer('server_conf.yml',score_fn)
     app.run()
 
-@pytest.fixture
-def finish():
-    yield
-    sys.exit()
 
-
-def test_server_datachannel_conn(start_server):
-    threading.Thread(target = start_server).start()
-
+def test_server_datachannel_conn():
     s = socket.socket(
         socket.AF_INET, socket.SOCK_STREAM)
     err = None
@@ -43,12 +34,9 @@ def test_server_datachannel_conn(start_server):
         s.connect((conf['ip'], conf['datachannel_port']))
     except socket.error as e:
         err = e
-    
     assert err == None
 
-def test_server_ping_conn(finish):
-    threading.Thread(target = start_server).start()
-
+def test_server_ping_conn():
     s = socket.socket(
         socket.AF_INET, socket.SOCK_STREAM)
     err = None
@@ -59,3 +47,7 @@ def test_server_ping_conn(finish):
     
     assert err == None
 
+start_server()
+test_server_ping_conn()
+test_server_datachannel_conn()
+os._exit(1)
