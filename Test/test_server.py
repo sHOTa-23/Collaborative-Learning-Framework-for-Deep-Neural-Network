@@ -66,9 +66,46 @@ def test_getting_id():
 
     assert err == None
 
+def test_connect_with_correct_id(id):
+    sckt = socket.socket(
+        socket.AF_INET, socket.SOCK_STREAM)
+    
+    sckt.connect((conf['ip'], conf['ping_port']))
+
+    
+    sckt.send('Connecting with id:{}'.format(id).encode())
+    err = None
+    try:
+        message = sckt.recv(1024)
+        assert message.decode() == 'Oh I know you!'
+    except socket.error as e:
+        err = e
+
+    assert err == None
+
+
+def test_connect_with_wrong_id(id):
+    sckt = socket.socket(
+        socket.AF_INET, socket.SOCK_STREAM)
+    
+    sckt.connect((conf['ip'], conf['ping_port']))
+
+    
+    sckt.send('Connecting with id:{}'.format(id).encode())
+    err = None
+    try:
+        message = sckt.recv(1024)
+        assert message.decode() == 'Oh I don\'t know you!'
+    except socket.error as e:
+        err = e
+
+    assert err == None
 
 start_server()
 test_server_ping_conn()
 test_server_datachannel_conn()
 test_getting_id()
+id = "f4f35d119d7cd5df3f5a327c92ccc107"
+test_connect_with_correct_id(id)
+test_connect_with_wrong_id("wrong id")
 os._exit(1)
