@@ -1,6 +1,7 @@
 from io import BytesIO
 import logging
 import pickle
+from os.path import exists
 logging.basicConfig(level=logging.NOTSET)
 def prepare_model(model):
     buffer = BytesIO()
@@ -28,6 +29,8 @@ def prepare_model(model):
 
 def load_model(model_type,model_path):
     model = None
+    if not exists(model_path):
+        return None
     if model_type == "sklearn":
         from joblib import load
         model = load(model_path)
@@ -48,6 +51,7 @@ def save_model(model_type,model_name,model):
         import torch
         m = torch.jit.script(model)
         torch.jit.save(m, model_name)
+        logging.info("Averaged Model has been saved on Server")
     elif model_type == 'tensorflow':
         import tensorflow as tf
         tf.autograph.set_verbosity(1)
@@ -56,7 +60,7 @@ def save_model(model_type,model_name,model):
         import h5py
         with h5py.File(model_name, 'w') as f:
             save_model(model, f)
-    logging.info("Averaged Model has been saved on Server")
+        logging.info("Averaged Model has been saved on Server")
 
 def receive(client_socket,model_type, socket_buffer_size=1024):
     buffer = BytesIO()
