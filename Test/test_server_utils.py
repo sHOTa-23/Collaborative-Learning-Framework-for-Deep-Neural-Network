@@ -56,7 +56,10 @@ def test_receive():
         socket.AF_INET, socket.SOCK_STREAM)
     def connect_server():
         time.sleep(2)
-        client.connect(("127.0.0.1", 9950))
+        try:
+            client.connect(("127.0.0.1", 9950))
+        except:
+            assert False
     threading.Thread(target=connect_server).start()
     
     server = socket.socket(
@@ -71,8 +74,11 @@ def test_receive():
 
     def send_model(cur_model):
         time.sleep(2)
-        client.send(cur_model)
-        client.send(b'EOF')
+        try:
+            client.send(cur_model)
+            client.send(b'EOF')
+        except:
+            assert False
     threading.Thread(target=send_model, args=(cur_model,)).start()
     
     received = receive(client_socket, "pytorch")
