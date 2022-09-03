@@ -44,13 +44,13 @@ def test_lower_version():
         assert message == 'update'
 
         sckt.send(b'Send version and model')
-        message = sckt.recv(1024).decode()
-        assert int(message) > 0 
+        version = sckt.recv(1024).decode()
+        assert int(version) > 0 
 
         sckt.send(b'Received version')
         received = receive(sckt, conf['model_type'])
         
-        cur_model = load_model("pytorch", "../Example/models/server/model_8.pt")
+        cur_model = load_model("pytorch", "../Example/models/server/model_{}.pt".format(version))
         cur_model = prepare_model(cur_model)
 
         assert cur_model == prepare_model(received)
