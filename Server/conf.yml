@@ -5,5 +5,6 @@ mongodb_host : mongodb+srv://doadmin:g12k79jU8L3y0u5t@db-mongodb-nyc3-12601-daed
 model_type : pytorch  #possible values: pytorch, tensorflow, sklearn
 server_model_path: models/server/
 datachannel_time_interval: 6
+datachannel_gap_time: 20
 golden_data_input_path: goldeninp.pkl
 golden_data_output_path: goldenout.pkl

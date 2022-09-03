@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.NOTSET)
 
 
 class DatachannelServer:
-    def __init__(self, ip, port,clientsDB,server_model_path,model_type,golden_data_input,golden_data_output,score_fn,listener_num = 100, gap_time=20):
+    def __init__(self, ip, port,clientsDB,server_model_path,model_type,golden_data_input,golden_data_output,score_fn,gap_time=20, listener_num = 100):
         self.ip = ip
         self.port = port
         self.server_model_path = server_model_path

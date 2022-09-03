@@ -1,6 +1,6 @@
 ip : 127.0.0.1
-datachannel_port : 9920
-ping_port : 9921
+datachannel_port : 9932
+ping_port : 9933
 id_path : id.txt
 client_sleep_time : 1 # Seconds
 model_path : bla.pt
