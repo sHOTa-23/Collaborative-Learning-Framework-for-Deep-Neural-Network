@@ -80,7 +80,7 @@ class PingServer:
         while True:
             data = client_socket.recv(socket_buffer_size).decode()
             current_time = datetime.datetime.now()
-            logging.info('Ping from {} at {}'.format(client_id, current_time))
+            logging.info('Ping from {} at {}, message: {}'.format(client_id, current_time, data))
             if data == "":
                 logging.debug("Client {} disconnected".format(client_id))
                 client_socket.close()
