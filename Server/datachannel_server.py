@@ -60,6 +60,7 @@ class DatachannelServer:
                 return None
             init_weights = self.received_values[keys[0]]
             averaging_weight = self.score_fn(init_weights(self.golden_data_input),self.golden_data_output)
+            sum_weighted_average = averaging_weight
             with torch.no_grad():
                 for i in init_weights.parameters():
                     i*=averaging_weight
@@ -70,13 +71,14 @@ class DatachannelServer:
                 print("Another Model")
             for mdl in range(1,len(keys)):
                 averaging_weight = self.score_fn(self.received_values[keys[mdl]](self.golden_data_input),self.golden_data_output)
+                sum_weighted_average += averaging_weight
                 with torch.no_grad():
                     for (i,j) in zip(init_weights.parameters(),self.received_values[keys[mdl]].parameters()):
                         i+=averaging_weight*j 
             
             with torch.no_grad():
                 for i in init_weights.parameters():
-                    i/=len(keys)
+                    i/=sum_weighted_average
             
             print("After")
             for i in init_weights.parameters():
@@ -96,6 +98,7 @@ class DatachannelServer:
                     print("\n")
             model = models[0]
             averaging_weight = self.score_fn(model(self.golden_data_input),self.golden_data_output)
+            sum_weighted_average = averaging_weight
             for layer in model.layers:
                 curr_weights = layer.get_weights()
                 for i in range(len(curr_weights)):
@@ -103,6 +106,7 @@ class DatachannelServer:
                 layer.set_weights(curr_weights)
             for model in models[1:]:
                 averaging_weight = self.score_fn(model(self.golden_data_input),self.golden_data_output)
+                sum_weighted_average += averaging_weight
                 for (layer0,layer1) in zip(models[0].layers,model.layers):
                     curr_weights = layer0.get_weights()
                     weights = layer1.get_weights()
@@ -113,7 +117,7 @@ class DatachannelServer:
             for layer in models[0].layers:
                 curr_weights = layer.get_weights()
                 for i in range(len(curr_weights)):
-                    curr_weights[i] = curr_weights[i] / len(models)
+                    curr_weights[i] = curr_weights[i] / sum_weighted_average
                 layer.set_weights(curr_weights)
             print("After")
             for layer in models[0].layers:
