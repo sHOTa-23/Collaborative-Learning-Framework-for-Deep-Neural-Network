@@ -76,6 +76,9 @@ class PingServer:
                 client_socket.send(b'Oh I know you!')
             else:
                client_socket.send(b'Oh I don\'t know you!')
+               client_socket.close()
+               return
+
 
         while True:
             data = client_socket.recv(socket_buffer_size).decode()
