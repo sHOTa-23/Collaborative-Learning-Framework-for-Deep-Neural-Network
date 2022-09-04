@@ -21,6 +21,7 @@ class DatachannelClient():
         self.id_path = id_path
         self.loss_function = loss_function
         self.optimizer = optimizer
+        self.id = "empty"
         logging.debug("Datachannel client initialized")
 
     def start(self, controller):
