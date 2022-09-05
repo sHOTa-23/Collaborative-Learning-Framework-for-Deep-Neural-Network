@@ -21,6 +21,7 @@ class DatachannelServer:
         self.server = None
         self.golden_data_input,self.golden_data_output = load_input(golden_data_input,golden_data_output)
         self.score_fn = score_fn
+        self.received_values = {}
         logging.debug('Datachannel initialized')
     
         
