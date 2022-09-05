@@ -8,6 +8,7 @@ import threading
 from Server.utils import *
 import os
 import yaml
+from test_utils import *
 
 
 ping_server = None
@@ -47,38 +48,42 @@ def test_client_connect_with_id():
     global connected_client_socket
     threading.Thread(target=start_client, args=("id_test/client_conf1.yml",)).start()
     connected_client_socket, _ = ping_server.accept()
-
+    res = True
     try:
         message = connected_client_socket.recv(1024).decode()
-        assert message == 'Connecting with id:f4f35d119d7cd5df3f5a327c92ccc107'
+        res = res and assert_equals(message, 'Connecting with id:f4f35d119d7cd5df3f5a327c92ccc107', 'Incorrect Id received from client!!')
     except:
-        assert False
+        res = res and assert_false(True, "Exception occurred!!")
+    
+    return res
 
 def test_client_connect_without_id():
     threading.Thread(target=start_client, args=("id_test/client_conf2.yml",)).start()
     client_socket, _ = ping_server.accept()
-
+    res = True
     try:
         message = client_socket.recv(1024).decode()
-        assert message == 'Give me an id you son of a bitch!'
+        res = res and assert_equals(message, 'Give me an id you son of a bitch!', 'Incorrect initial message received from client!!')
     except:
-        assert False
+        res = res and assert_false(True, 'Exception occurred!!')
+    return res
 
 def test_client_version():
     global connected_client_socket
     connected_client_socket.send(b'Oh I know you!')
+    res = True
     try:
         message = connected_client_socket.recv(1024).decode()
-        assert message.isdecimal()
+        res = res and assert_true(message.isdecimal(), "Incorrect format of client\'s version!!")
         vers = int(message) + 1
 
         connected_client_socket.send(b'update')
         message = connected_client_socket.recv(1024).decode()
-        assert message == 'Send version and model'
+        res = res and assert_equals(message, 'Send version and model', "Incorrect message from client!!")
 
         connected_client_socket.send(str(vers).encode())
         message = connected_client_socket.recv(1024).decode()
-        assert message == 'Received version'
+        res = res and assert_equals(message, 'Received version', "Incorrect message from client!!")
 
         model = load_model("pytorch", "bla.pt")
         model = prepare_model(model)
@@ -86,27 +91,30 @@ def test_client_version():
         connected_client_socket.sendall(b'EOF')
 
         message = connected_client_socket.recv(1024).decode()
-        assert message == 'Finished updating'
+        res = res and assert_equals(message, 'Finished updating', "Incorrect message from client!!")
     except:
-        assert False
+        res = res and assert_equals(True, False, "Exception occurred!!")
+    
+    return res
 
 
 def test_client_datachannel_start():
     global connected_client_socket, datachannel_server
     bind_datachannel_server()
+    res = True
     try:
         message = connected_client_socket.recv(1024).decode()
-        assert message.isdecimal()
+        res = res and assert_true(message.isdecimal(), 'Incorrect format of client\'s version!!')
 
         connected_client_socket.send(b'start')
         datachannel_server.accept()
     except:
-        assert False
+        res = res and assert_false(True, 'Exception occurred!!')
+    
+    return res
 
 bind_ping_server()
-test_client_connect_without_id()
-test_client_connect_with_id()
-test_client_version()
-test_client_datachannel_start()
+final_score(test_client_connect_without_id, test_client_connect_with_id, test_client_version, test_client_datachannel_start)
+
 os._exit(1)
 

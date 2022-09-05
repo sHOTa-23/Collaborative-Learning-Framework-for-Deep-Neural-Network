@@ -1,6 +1,13 @@
-from pydoc import cli
 import sys
 sys.path.insert(0,"../")
+
+from Client.client_controller import ClientController
+from Client.ping_client import PingClient
+from pydoc import cli
+from this import s
+
+from Test.test_utils import assert_equals
+
 import socket
 from Client.app_clients import AppClient
 import torch.nn as nn
@@ -10,6 +17,8 @@ from Server.utils import *
 import os
 import yaml
 from Client.datachannel_client import DatachannelClient
+from test_utils import *
+
 
 datachannel_server = None
 
@@ -32,16 +41,17 @@ def test_send_model():
     def connect(array):
         time.sleep(2)
         client.connect_server()
+        client.controller = ClientController(client, PingClient("","","","","",""))
         client.send_model(array)
     threading.Thread(target=connect, args=(load_model("pytorch","bla.pt"),)).start()
 
     client_socket, _ = datachannel_server.accept()
-
+    res = True
     try:
         time.sleep(2)
         client_socket.send(b'start')
         id = client_socket.recv(1024).decode()
-        assert id != ""
+        res = res and assert_not_equals(id, "", "Empty message received from datachannel client!!")
 
         client_socket.send(b'Id Verified')
 
@@ -50,16 +60,16 @@ def test_send_model():
         cur_model = load_model("pytorch", "bla.pt")
         cur_model = prepare_model(cur_model)
 
-        assert cur_model == prepare_model(received_model)
+        res = res and assert_equals(cur_model, prepare_model(received_model), "Incorrect model received from datachannel client!!")
 
         message = client_socket.send(b'calculation completed')
 
     except:
-        assert False
+        res = res and assert_false(True, "Exception occurred!!")
 
-
+    return res
 
 
 bind_datachannel_server()
-test_send_model()
+final_score(test_send_model)
 os._exit(1)

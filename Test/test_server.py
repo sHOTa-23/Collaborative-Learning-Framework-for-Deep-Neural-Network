@@ -7,6 +7,7 @@ import time
 import threading
 import yaml
 import os
+from test_utils import *
 
 from Server.app_servers import AppServer
 
@@ -39,7 +40,8 @@ def test_server_datachannel_conn():
         datachannel_socket.connect((conf['ip'], conf['datachannel_port']))
     except socket.error as e:
         err = e
-    assert err == None
+    
+    return assert_equals(err, None, 'Exception Occurred while connecting datachannel server!!')
 
 def test_server_ping_conn():
     global ping_socket
@@ -51,44 +53,64 @@ def test_server_ping_conn():
     except socket.error as e:
         err = e
     
-    assert err == None
+    return assert_equals(err, None, "Exception occurred while connectin ping server!!")
 
 
 def test_getting_id():
     global ping_socket
     ping_socket.send(b'Give me an id you son of a bitch!')
     err = None
+    res = True
     try:
         message = ping_socket.recv(1024)
+        res = res and assert_not_equals(message.decode(), "", "Empty message receive from server!!")
         assert message.decode() != ""
     except socket.error as e:
         err = e
 
-    assert err == None
+    return res and assert_equals(err, None, "Exception occurred!!") 
 
-def test_connect_with_id(id, expected):
+def test_connect_with_correct_id():
     sckt = socket.socket(
         socket.AF_INET, socket.SOCK_STREAM)
     
     sckt.connect((conf['ip'], conf['ping_port']))
 
     
-    sckt.send('Connecting with id:{}'.format(id).encode())
+    sckt.send('Connecting with id:f4f35d119d7cd5df3f5a327c92ccc107'.encode())
     err = None
+    res = True
     try:
         message = sckt.recv(1024)
-        assert message.decode() == expected
+        res = res and assert_equals(message.decode(), 'Oh I know you!', "Wrong message received from server when connecting with id!!")
+        # assert message.decode() == expected
     except socket.error as e:
         err = e
 
-    assert err == None
+    return res and assert_equals(err, None, "Exception occurred")
+
+
+def test_connect_with_wrong_id():
+    sckt = socket.socket(
+        socket.AF_INET, socket.SOCK_STREAM)
+    
+    sckt.connect((conf['ip'], conf['ping_port']))
+
+    
+    sckt.send('Connecting with id:wrong id'.encode())
+    err = None
+    res = True
+    try:
+        message = sckt.recv(1024)
+        res = res and assert_equals(message.decode(), 'Oh I don\'t know you!', "Wrong message received from server when connecting with id!!")
+        # assert message.decode() == expected
+    except socket.error as e:
+        err = e
+
+    return res and assert_equals(err, None, "Exception occurred")
 
 
 start_server()
-test_server_ping_conn()
-test_server_datachannel_conn()
-test_getting_id()
-id = "f4f35d119d7cd5df3f5a327c92ccc107"
-test_connect_with_id(id, 'Oh I know you!')
-test_connect_with_id("wrong id", 'Oh I don\'t know you!')
+
+final_score(test_server_ping_conn, test_server_datachannel_conn, test_getting_id, test_connect_with_correct_id, test_connect_with_wrong_id)
 os._exit(1)
