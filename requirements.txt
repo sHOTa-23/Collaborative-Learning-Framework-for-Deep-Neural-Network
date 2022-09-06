@@ -1,0 +1,6 @@
+PyYAML
+torch
+tensorflow
+pymongo
+colored
+pymongo[srv]
