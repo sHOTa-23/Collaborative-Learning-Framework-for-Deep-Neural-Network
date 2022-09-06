@@ -32,7 +32,7 @@ def start_server():
 
 def start_client():
     loss = nn.MSELoss()
-    app = AppClient('id_test\client_conf.yml',loss)
+    app = AppClient('id_test/client_conf.yml',loss)
     app.run()
 
 
