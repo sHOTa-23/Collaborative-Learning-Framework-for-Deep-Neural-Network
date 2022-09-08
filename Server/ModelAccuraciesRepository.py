@@ -7,7 +7,7 @@ class ModelAccuraciesRepository:
         self.models = self.db.models
 
     def add_model_accuracy(self, accuracy, time, clients):
-        self.clients.insert_one({'accuracy': accuracy, 'time': time, 'clients': clients})
+        self.models.insert_one({'accuracy': accuracy, 'time': time, 'clients': clients})
 
     def get_clients_accuracies(self):
         accuracies = [(model['accuracy'], model['time'], model['clients']) for model in self.models.find()]
