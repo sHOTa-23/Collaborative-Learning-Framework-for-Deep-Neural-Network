@@ -47,6 +47,6 @@ class AppServer:
 
         server_controller = ServerController(datachannel_server,ping_server,highest_version)
         server_controller.start()
-        th = threading.Thread(target=run_chart_server,args=(self.configuration['ip'],self.configuration['chart_port'],self.configuration['mongodb_host']))
+        th = threading.Thread(target=run_chart_server,args=('127.0.0.1',self.configuration['chart_port'],self.configuration['mongodb_host']))
         th.start()
         logging.debug("Server Controller started")
