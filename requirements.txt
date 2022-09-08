@@ -4,3 +4,4 @@ tensorflow
 pymongo
 colored
 pymongo[srv]
+flask
