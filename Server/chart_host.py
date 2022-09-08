@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 @app.route("/", methods=['GET'])
 def static_dir():
-    return send_from_directory("", conf['chart_path'])
+    return send_from_directory("", 'sample1.html')
 
 if __name__ == '__main__':
-    app.run(host=conf['ip'], port='8080')
+    app.run(host=conf['ip'], port=conf['chart_port'])
