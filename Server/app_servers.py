@@ -5,6 +5,7 @@ from Server.ping_server import PingServer
 from Server.yaml_validator import Validator
 from Server.server_controller import ServerController
 from Server.ClientsRepository import ClientsRepository
+from Server.ModelAccuraciesRepository import ModelAccuraciesRepository
 import logging
 logging.basicConfig(level=logging.NOTSET)
 
@@ -32,8 +33,9 @@ class AppServer:
             return
         logging.debug("Configuration is valid")
         clientDB = ClientsRepository(self.configuration['mongodb_host'])
+        modelDB = ModelAccuraciesRepository(self.configuration['mongodb_host'])
         ping_server = PingServer(self.configuration['ip'],self.configuration['ping_port'],clientDB,self.configuration['server_model_path'],self.configuration['model_type'], self.configuration['datachannel_time_interval'])
-        datachannel_server = DatachannelServer(self.configuration['ip'],self.configuration['datachannel_port'],clientDB,self.configuration['server_model_path'],self.configuration['model_type'],self.configuration['golden_data_input_path'],self.configuration['golden_data_output_path'],self.score_fn, self.configuration['datachannel_gap_time'])
+        datachannel_server = DatachannelServer(self.configuration['ip'],self.configuration['datachannel_port'],clientDB,modelDB,self.configuration['server_model_path'],self.configuration['model_type'],self.configuration['golden_data_input_path'],self.configuration['golden_data_output_path'],self.score_fn, self.configuration['datachannel_gap_time'])
         
         path = self.configuration['server_model_path']
         highest_version = 0

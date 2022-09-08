@@ -2,6 +2,7 @@ import sys
 sys.path.insert(0,"../")
 from Server.datachannel_server import DatachannelServer
 from Server.ClientsRepository import ClientsRepository
+from Server.ModelAccuraciesRepository import ModelAccuraciesRepository
 from Client.utils import load_model
 import torch
 import yaml
@@ -30,7 +31,7 @@ def score_fn_tensorflow(pred,golden):
 
 def test_count_average_pytorch():
     res = True
-    datachannel_server = DatachannelServer('127.0.0.1', 9961, ClientsRepository(conf["mongodb_host"]), "", "pytorch", "goldeninp.pkl", "goldenout.pkl", score_fn_pytorch)
+    datachannel_server = DatachannelServer('127.0.0.1', 9961, ClientsRepository(conf["mongodb_host"]), ModelAccuraciesRepository(conf["mongodb_host"]), "", "pytorch", "goldeninp.pkl", "goldenout.pkl", score_fn_pytorch)
     model1 = load_model("pytorch", "pytorch_models_for_average/model1.pt")
     model2 = load_model("pytorch", "pytorch_models_for_average/model1.pt")
     with torch.no_grad():
@@ -50,7 +51,7 @@ def test_count_average_pytorch():
 
 def test_count_average_tensorflow():
     res = True
-    datachannel_server = DatachannelServer('127.0.0.1', 9961, ClientsRepository(conf["mongodb_host"]), "", "tensorflow", "tfinput.pkl", "tfoutput.pkl", score_fn_tensorflow)
+    datachannel_server = DatachannelServer('127.0.0.1', 9961, ClientsRepository(conf["mongodb_host"]), ModelAccuraciesRepository(conf["mongodb_host"]), "", "tensorflow", "tfinput.pkl", "tfoutput.pkl", score_fn_tensorflow)
     model1 = load_model("tensorflow", "pytorch_models_for_average/tf.h5")
     model2 = load_model("tensorflow", "pytorch_models_for_average/tf.h5")
     for layer in model1.layers:

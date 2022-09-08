@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.NOTSET)
 
 
 class DatachannelServer:
-    def __init__(self, ip, port,clientsDB,server_model_path,model_type,golden_data_input,golden_data_output,score_fn,gap_time=20, listener_num = 100):
+    def __init__(self, ip, port,clientsDB,modelsDB,server_model_path,model_type,golden_data_input,golden_data_output,score_fn,gap_time=20, listener_num = 100):
         self.ip = ip
         self.port = port
         self.server_model_path = server_model_path
@@ -18,6 +18,7 @@ class DatachannelServer:
         self.listener_num = listener_num
         self.gap_time = gap_time
         self.clientsDB = clientsDB
+        self.modelsDB = modelsDB
         self.server = None
         self.golden_data_input,self.golden_data_output = load_input(golden_data_input,golden_data_output)
         self.score_fn = score_fn
@@ -140,8 +141,8 @@ class DatachannelServer:
             self.server_controller.version_updating.acquire()
             pass
         averaged_model = self.calculate_average()
+        self.modelsDB.add_model_accuracy(self.score_fn(init_weights(self.golden_data_input),self.golden_data_output), datetime.datetime.now())
         self.server_controller.increase_version()
-
         whole_path = self.server_model_path + '/' + 'model_' + str(self.server_controller.get_version())
         if self.model_type == "pytorch":
             whole_path += '.pt'

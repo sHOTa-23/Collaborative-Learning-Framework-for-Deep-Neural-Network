@@ -1,4 +1,4 @@
-ip : 127.0.0.1
+ip : 159.223.129.45
 datachannel_port : 9920
 ping_port : 9921
 id_path : id.txt
