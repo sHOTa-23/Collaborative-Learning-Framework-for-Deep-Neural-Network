@@ -141,7 +141,7 @@ class DatachannelServer:
             self.server_controller.version_updating.acquire()
             pass
         averaged_model = self.calculate_average()
-        self.modelsDB.add_model_accuracy(self.score_fn(init_weights(self.golden_data_input),self.golden_data_output), datetime.datetime.now(), len(self.received_values))
+        self.modelsDB.add_model_accuracy(self.score_fn(averaged_model(self.golden_data_input),self.golden_data_output), datetime.datetime.now(), len(self.received_values))
         self.server_controller.increase_version()
         whole_path = self.server_model_path + '/' + 'model_' + str(self.server_controller.get_version())
         if self.model_type == "pytorch":
