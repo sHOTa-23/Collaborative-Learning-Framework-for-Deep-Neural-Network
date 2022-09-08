@@ -1,15 +1,19 @@
 from flask import Flask, send_from_directory
 import yaml
-
-conf = None
-with open('conf.yml') as f:
-    conf = yaml.safe_load(f)
-
+from Server.generate_chart import generate_chart
 app = Flask(__name__)
-
-@app.route("/", methods=['GET'])
+print("app runned")
+mongodb_host = None
+def run_chart_server(ip,port,mongodb_host_):
+    global mongodb_host
+    mongodb_host = mongodb_host_
+    conf = None
+    print("N_____________________")
+    app.run(host=ip, port=port)
+    
+@app.route('/', methods=['GET'])
 def static_dir():
-    return send_from_directory("", 'sample1.html')
+    html = generate_chart(mongodb_host)
+    return html
 
-if __name__ == '__main__':
-    app.run(host=conf['ip'], port=conf['chart_port'])
+    

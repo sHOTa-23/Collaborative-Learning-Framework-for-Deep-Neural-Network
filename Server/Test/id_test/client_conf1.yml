@@ -1,0 +1,10 @@
+ip : 127.0.0.1
+datachannel_port : 9951
+ping_port : 9950
+id_path : id_test/id.txt
+client_sleep_time : 1 # Seconds
+model_path : bla.pt
+model_type : pytorch  #possible values: pytorch, tensorflow, sklearn
+input_path: inp.pkl
+output_path: out.pkl
+learning_rate : 1.7

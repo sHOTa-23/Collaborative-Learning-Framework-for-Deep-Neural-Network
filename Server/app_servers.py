@@ -7,6 +7,8 @@ from Server.server_controller import ServerController
 from Server.ClientsRepository import ClientsRepository
 from Server.ModelAccuraciesRepository import ModelAccuraciesRepository
 import logging
+import threading
+from Server.chart_host import *
 logging.basicConfig(level=logging.NOTSET)
 
 #178.62.92.57
@@ -45,5 +47,6 @@ class AppServer:
 
         server_controller = ServerController(datachannel_server,ping_server,highest_version)
         server_controller.start()
-
+        th = threading.Thread(target=run_chart_server,args=(self.configuration['ip'],self.configuration['chart_port'],self.configuration['mongodb_host']))
+        th.start()
         logging.debug("Server Controller started")

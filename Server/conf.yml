@@ -1,5 +1,5 @@
 ip : 127.0.0.1
-chart_port: 8080
+chart_port: 8082
 datachannel_port : 9920
 ping_port : 9921
 mongodb_host : mongodb+srv://doadmin:g12k79jU8L3y0u5t@db-mongodb-nyc3-12601-daeda50b.mongo.ondigitalocean.com/admin?authSource=admin&replicaSet=db-mongodb-nyc3-12601&tls=true
